@@ -224,6 +224,6 @@ $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
 	@$(END_TIME)
 
 # Added
-.PHONY: run 
-run: 
+.PHONY: run
+run:
 	./$(BIN_NAME)
