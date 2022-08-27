@@ -1,11 +1,26 @@
-#include "math.hpp"
+#include <fstream>
 #include <iostream>
+#include <string>
 
 int main() {
-    vec2f v1 { 1.01, 2.21 };
-    vec2f v2 { 6.22, 2.21 };
+    std::ifstream file("obj/african_head/african_head.obj", std::ios::in);
+    if (file.fail()) {
+        std::cout << "Ha ocurrido un error al cargar el archivo" << std::endl;
+    }
+    if (file.fail()) {
+        std::cout << "Ha ocurrido un error al cargar el archivo" << std::endl;
+    }
 
-    std::cout << crossProduct( static_cast<vec3f>(v1), static_cast<vec3f>(v2)) << '\n';
+    int ctn { 0 };
+    char trash;
+    std::string str;
+
+    while (!file.fail()) {
+        std::getline(file, str, '\n');
+        ctn++;
+    }
+
+    std::cout << ctn << '\n';
 }
 
 // TODO:
