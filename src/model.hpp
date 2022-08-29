@@ -1,17 +1,42 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-// Leer los v
-// Leer las vt
-// Leer las vn
+#include "math.hpp"
+#include <vector>
 
+struct face {
+    int v_idx[3] {};
+    int vt_idx[3] {};
+    int vn_idx[3] {};
+};
 
-class model {
+class Model {
 public:
-    model();
-    ~model();
+    Model() = default;
+    Model(const char* filename);
+    ~Model();
+
+    int getTotalFaces() { return total_faces; }
+    int getTotalVertices() { return total_v; }
+    int getTotalVertsTextures() { return total_vt; }
+    int getTotalVertsNormals() { return total_vn; }
+
+    bool load_model_from_file(const char* filename);
+
+    // Member functions added
+
+    vec3f getVertex(int face_index, int which_vertex);
 
 private:
+    int total_v { 0 };
+    int total_vt { 0 };
+    int total_vn { 0 };
+    int total_faces { 0 };
+
+    std::vector<vec3f> vertices;
+    std::vector<vec2f> vertices_textures;
+    std::vector<vec3f> vertices_normals;
+    std::vector<face> faces;
 };
 
 #endif // MODEL_H

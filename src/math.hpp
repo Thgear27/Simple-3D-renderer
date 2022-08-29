@@ -1,6 +1,7 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include <cmath>
 #include <iostream>
 
 template <typename T>
@@ -21,7 +22,14 @@ public:
         out << "v2(" << v2.x << ", " << v2.y << ")";
         return out;
     }
+
+    void normalize() {
+        float module = std::sqrt(dotProduct(static_cast<vec3<T>>(*this),static_cast<vec3<T>> (*this)));
+        *this = *this / module;
+    }
 };
+
+// Operaciones basicas vec2
 
 template <typename T>
 const vec2<T> operator+(const vec2<T>& v1, const vec2<T>& v2) {
@@ -56,7 +64,14 @@ public:
         out << "v3(" << v3.x << ", " << v3.y << ", " << v3.z << ")";
         return out;
     }
+
+    void normalize() {
+        float module = std::sqrt(dotProduct(*this, *this));
+        *this = *this / module;
+    }
 };
+
+// Operaciones basicas vec2
 
 template <typename T>
 const vec3<T> operator+(const vec3<T>& v1, const vec3<T>& v2) {
@@ -97,6 +112,8 @@ const vec3<T> crossProduct(const vec3<T>& v1, const vec3<T>& v2) {
     return vec3<T> { v1.y * v2.z - v2.y * v1.z, v2.x * v1.z - v1.x * v2.z,
                      v1.x * v2.y - v2.x * v1.y };
 }
+
+////////////////////////////////////////////////////////////////
 
 using vec2i = vec2<int>;
 using vec2f = vec2<float>;
