@@ -4,6 +4,9 @@
 #include <cmath>
 #include <iostream>
 
+// Deberia reescribir esta parte para hacer que vec sea una sola clase de la cual sale vec<2, T> y
+// vec<3, T> y así respetar la regla de "DO NOT REPEAT YOUR SELF"
+
 template <typename T>
 class vec3;
 
@@ -24,7 +27,8 @@ public:
     }
 
     void normalize() {
-        float module = std::sqrt(dotProduct(static_cast<vec3<T>>(*this),static_cast<vec3<T>> (*this)));
+        float module =
+            std::sqrt(dotProduct(static_cast<vec3<T>>(*this), static_cast<vec3<T>>(*this)));
         *this = *this / module;
     }
 };
@@ -97,6 +101,10 @@ const vec3<T> operator/(const vec3<T>& v1, const T k) {
 template <typename T>
 vec2<T>::operator vec3<T>() const {
     return vec3<T> { x, y, T() };
+}
+template <typename T>
+vec2<T> discard_Z(vec3<T> v) {
+    return vec2<T> { v.x, v.y };
 }
 
 ////////////////////////////////////////////////////////////////
