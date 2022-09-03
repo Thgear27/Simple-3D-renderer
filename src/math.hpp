@@ -128,4 +128,8 @@ using vec2f = vec2<float>;
 using vec3i = vec3<int>;
 using vec3f = vec3<float>;
 
+////////////////////////////////////////////////////////////////
+// Geometric Baricentric Coords
+vec3f toBarycentricCoord(vec2f* verts, vec2f point);
+
 #endif // MATH_H
