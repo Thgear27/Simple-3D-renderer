@@ -15,6 +15,9 @@ const TGAColor white = { 255, 255, 255, 255 };
 namespace my_gl {
 
 void line(vec2i p0, vec2i p1, TGAImage& img, const TGAColor& color);
+
+void triangle(vec3f* verts, TGAImage& img, const TGAColor& color);
+
 void wireRender(Model& model, const TGAColor& line_color, TGAImage& img);
 
 } // namespace my_gl

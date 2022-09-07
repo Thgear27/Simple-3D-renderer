@@ -14,7 +14,7 @@ template <typename T>
 class vec2 {
 public:
     T x, y;
-    explicit vec2() : x(T()), y(T()) {}
+    vec2() : x(T()), y(T()) {}
     explicit vec2(const T l_x, const T l_y) : x(l_x), y(l_y) {}
 
     operator vec3<T>() const;
@@ -67,7 +67,7 @@ template <typename T>
 class vec3 {
 public:
     T x, y, z;
-    explicit vec3() : x(T()), y(T()), z(T()) {}
+    vec3() : x(T()), y(T()), z(T()) {}
     explicit vec3(T l_x, T l_y, T l_z) : x(l_x), y(l_y), z(l_z) {}
 
     template <typename U>
@@ -231,6 +231,6 @@ T dotProduct(const vec<size, T>& lhs, const vec<size, T>& rhs) {
 
 ////////////////////////////////////////////////////////////////
 // Geometric Baricentric Coords
-vec3f toBarycentricCoord(vec2f* verts, vec2f point);
+vec3f toBarycentricCoord(vec3f* verts, vec2f point);
 
 #endif // MATH_H

@@ -1,7 +1,7 @@
 #include "my_gl.hpp"
 #include "math.hpp"
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 namespace my_gl {
 
@@ -38,12 +38,58 @@ void line(vec2i p0, vec2i p1, TGAImage& img, const TGAColor& color) {
     }
 }
 
+void triangle(vec3f* verts, TGAImage& img, const TGAColor& color) {
+    vec3i verts_i[3] {};
+
+    for (int i = 0; i < 3; i++) {
+        verts_i[i] = verts[i];
+    }
+
+    // DEBUGADO
+    // for (int i = 0; i < 3; i++) {
+    //     img.set(verts_i[i].x, verts_i[i].y, color::red);
+    // }
+    // line(discard_Z(verts_i[0]), discard_Z(verts_i[1]), img, color::red);
+    // line(discard_Z(verts_i[2]), discard_Z(verts_i[1]), img, color::red);
+    // line(discard_Z(verts_i[0]), discard_Z(verts_i[2]), img, color::red);
+    // DEBUGADO
+
+    vec2i boxmin = vec2i { img.get_width(), img.get_height() };
+    vec2i boxmax {};
+    for (int i = 0; i < 3; i++) {
+        boxmin.x = std::max(0, std::min(boxmin.x, verts_i[i].x));
+        boxmin.y = std::max(0, std::min(boxmin.y, verts_i[i].y));
+
+        boxmax.x = std::min(img.get_width(), std::max(boxmax.x, verts_i[i].x));
+        boxmax.y = std::min(img.get_height(), std::max(boxmax.y, verts_i[i].y));
+    }
+
+    for (int x = boxmin.x; x < boxmax.x; x++) {
+        for (int y = boxmin.y; y < boxmax.y; y++) {
+            vec3f bcoord = toBarycentricCoord(verts, vec2f { (float)x, (float)y });
+            if (bcoord.x <= 0.0f || bcoord.y <= 0.0f || bcoord.z <= 0.0f)
+                continue;
+            img.set(x, y, color);
+        }
+    }
+
+    /// DEBUGADO
+    // std::cout << "Vertices:\n";
+    // for (int i = 0; i < 3; i++) {
+    //     std::cout << verts[i] << "\t\t" << verts_i[i] << '\n';
+    // }
+
+    // std::cout << "Punto minimo de la caja" << boxmin << '\n';
+    // std::cout << "Punto maximo de la caja" << boxmax << '\n';
+    /// DEBUGADO
+}
+
 void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     for (int i = 0; i < model.getTotalFaces(); i++) {
         vec2f vertex1 = discard_Z(model.getVertex(i, 1));
         vec2f vertex2 = discard_Z(model.getVertex(i, 2));
         vec2f vertex3 = discard_Z(model.getVertex(i, 3));
-        
+
         vertex1.x = (vertex1.x + 1.0f) * img.get_width() / 2;
         vertex1.y = (vertex1.y + 1.0f) * img.get_height() / 2;
         vertex2.x = (vertex2.x + 1.0f) * img.get_width() / 2;

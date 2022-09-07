@@ -13,25 +13,27 @@ const char* boogie_body = "obj/boggie/body.obj";
 const char* diablo3pose = "obj/diablo3_pose/diablo3_pose.obj";
 
 int main() {
-    vec3f vector { 1.999f, 3.434f, 56.234 };
-    vec3i vectori = vector;
-    std::cout << vectori << '\n';
+    TGAImage img(width, height, TGAImage::Format::RGB);
+    Model model1 { african_head };
+    for (int i = 0; i < model1.getTotalFaces(); i++) {
+        vec3f vertex1 = model1.getVertex(i, 1);
+        vec3f vertex2 = model1.getVertex(i, 2);
+        vec3f vertex3 = model1.getVertex(i, 3);
 
-    TGAImage img(height, width, TGAImage::Format::RGB);
-    Model modelo;
-    Model modelo2;
+        vertex1.x = (vertex1.x + 1.0f) * img.get_width() / 2;
+        vertex1.y = (vertex1.y + 1.0f) * img.get_height() / 2;
+        vertex2.x = (vertex2.x + 1.0f) * img.get_width() / 2;
+        vertex2.y = (vertex2.y + 1.0f) * img.get_height() / 2;
+        vertex3.x = (vertex3.x + 1.0f) * img.get_width() / 2;
+        vertex3.y = (vertex3.y + 1.0f) * img.get_height() / 2;
 
-    if (!modelo.load_model_from_file(boogie_body))
-        return -1;
-
-    if (!modelo2.load_model_from_file(boogie_head))
-        return -1;
-
-    my_gl::wireRender(modelo, color::red, img);
-    my_gl::wireRender(modelo2, color::red, img);
-
+        vec3f verts[] { vertex1, vertex2, vertex3 };
+        my_gl::triangle(verts, img, TGAColor { rand() % 255, rand() % 255, rand() % 255, 255 });
+        // my_gl::triangle(verts, img, color::white);
+    }
     img.flip_vertically();
-    img.write_tga_file("renders/file6.tga");
+    img.write_tga_file("test.tga");
+    std::cout << "hecho" << '\n';
 }
 
 // TODO:
