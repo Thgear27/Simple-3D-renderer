@@ -39,10 +39,10 @@ void line(vec2i p0, vec2i p1, TGAImage& img, const TGAColor& color) {
 }
 
 void triangle(vec3f* verts, TGAImage& img, const TGAColor& color) {
-    vec3i verts_i[3] {};
+    vec3f verts_i[3] {};
 
     for (int i = 0; i < 3; i++) {
-        verts_i[i] = verts[i];
+        verts_i[i] = (vec3i)verts[i];
     }
 
     // DEBUGADO
@@ -54,20 +54,20 @@ void triangle(vec3f* verts, TGAImage& img, const TGAColor& color) {
     // line(discard_Z(verts_i[0]), discard_Z(verts_i[2]), img, color::red);
     // DEBUGADO
 
-    vec2i boxmin = vec2i { img.get_width(), img.get_height() };
-    vec2i boxmax {};
+    vec2f boxmin = vec2f { img.get_width(), img.get_height() };
+    vec2f boxmax {};
     for (int i = 0; i < 3; i++) {
-        boxmin.x = std::max(0, std::min(boxmin.x, verts_i[i].x));
-        boxmin.y = std::max(0, std::min(boxmin.y, verts_i[i].y));
+        boxmin.x = std::max(0.0f, std::min(boxmin.x, verts_i[i].x));
+        boxmin.y = std::max(0.0f, std::min(boxmin.y, verts_i[i].y));
 
-        boxmax.x = std::min(img.get_width(), std::max(boxmax.x, verts_i[i].x));
-        boxmax.y = std::min(img.get_height(), std::max(boxmax.y, verts_i[i].y));
+        boxmax.x = std::min((float)img.get_width(), std::max(boxmax.x, verts_i[i].x));
+        boxmax.y = std::min((float)img.get_height(), std::max(boxmax.y, verts_i[i].y));
     }
 
     for (int x = boxmin.x; x < boxmax.x; x++) {
         for (int y = boxmin.y; y < boxmax.y; y++) {
-            vec3f bcoord = toBarycentricCoord(verts, vec2f { (float)x, (float)y });
-            if (bcoord.x <= 0.0f || bcoord.y <= 0.0f || bcoord.z <= 0.0f)
+            vec3f bcoord = toBarycentricCoord(verts_i, vec2f { (float)x, (float)y });
+            if (bcoord.x < 0.0f || bcoord.y < 0.0f || bcoord.z < 0.0f)
                 continue;
             img.set(x, y, color);
         }

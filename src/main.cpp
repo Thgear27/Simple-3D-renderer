@@ -27,12 +27,12 @@ int main() {
         vertex3.x = (vertex3.x + 1.0f) * img.get_width() / 2;
         vertex3.y = (vertex3.y + 1.0f) * img.get_height() / 2;
 
-        vec3f verts[] { vertex1, vertex2, vertex3 };
+        vec3f verts[] { (vec3i)vertex1, (vec3i)vertex2, (vec3i)vertex3 };
         my_gl::triangle(verts, img, TGAColor { rand() % 255, rand() % 255, rand() % 255, 255 });
-        // my_gl::triangle(verts, img, color::white);
+        my_gl::triangle(verts, img, TGAColor { 255, 255, 255, 255 });
     }
     img.flip_vertically();
-    img.write_tga_file("test.tga");
+    img.write_tga_file("test3.tga");
     std::cout << "hecho" << '\n';
 }
 
