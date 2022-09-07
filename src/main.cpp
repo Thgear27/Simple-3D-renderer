@@ -14,30 +14,17 @@ const char* diablo3pose = "obj/diablo3_pose/diablo3_pose.obj";
 
 int main() {
     TGAImage img(width, height, TGAImage::Format::RGB);
-    Model model1 { african_head };
-    for (int i = 0; i < model1.getTotalFaces(); i++) {
-        vec3f vertex1 = model1.getVertex(i, 1);
-        vec3f vertex2 = model1.getVertex(i, 2);
-        vec3f vertex3 = model1.getVertex(i, 3);
+    Model model1 { boogie_body };
+    vec3f light { 0, 0, 1 };
 
-        vertex1.x = (vertex1.x + 1.0f) * img.get_width() / 2;
-        vertex1.y = (vertex1.y + 1.0f) * img.get_height() / 2;
-        vertex2.x = (vertex2.x + 1.0f) * img.get_width() / 2;
-        vertex2.y = (vertex2.y + 1.0f) * img.get_height() / 2;
-        vertex3.x = (vertex3.x + 1.0f) * img.get_width() / 2;
-        vertex3.y = (vertex3.y + 1.0f) * img.get_height() / 2;
+    my_gl::simpleRender(model1, img);
 
-        vec3f verts[] { (vec3i)vertex1, (vec3i)vertex2, (vec3i)vertex3 };
-        my_gl::triangle(verts, img, TGAColor { rand() % 255, rand() % 255, rand() % 255, 255 });
-        my_gl::triangle(verts, img, TGAColor { 255, 255, 255, 255 });
-    }
     img.flip_vertically();
-    img.write_tga_file("test3.tga");
+    img.write_tga_file("test7.tga");
     std::cout << "hecho" << '\n';
 }
 
 // TODO:
 /**
  * Refactorizar el código
- * Dibujar (rellenarlas) las faces sin preocuparse del zbuffer
  */

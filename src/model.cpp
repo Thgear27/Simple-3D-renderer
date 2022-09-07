@@ -96,3 +96,10 @@ vec3f Model::getVertex(int face_index, int which_vertex) {
     assert(which_vertex <= 3 && which_vertex >= 1);
     return vertices[faces[face_index].v_idx[which_vertex - 1]];
 }
+
+vec3f Model::getVertexNormal(int face_index, int which_vertex) {
+    if (!(which_vertex <= 3 && which_vertex >= 1))
+        std::cout << "parametro wich_vertex tiene que ser de 1 a 3\n";
+    assert(which_vertex <= 3 && which_vertex >= 1);
+    return vertices[faces[face_index].vn_idx[which_vertex - 1]];
+}

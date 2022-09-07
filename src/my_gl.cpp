@@ -107,4 +107,28 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     }
 }
 
+void simpleRender(Model& model, TGAImage& img) {
+    vec3f light { 0, 0, 1 };
+    for (int i = 0; i < model.getTotalFaces(); i++) {
+        vec3f vertex1 = model.getVertex(i, 1);
+        vec3f vertex2 = model.getVertex(i, 2);
+        vec3f vertex3 = model.getVertex(i, 3);
+
+        vec3f normal = crossProduct(vertex2 - vertex1, vertex3 - vertex1);
+        normal.normalize();
+
+        vertex1.x = (vertex1.x + 1.0f) * img.get_width() / 2;
+        vertex1.y = (vertex1.y + 1.0f) * img.get_height() / 2;
+        vertex2.x = (vertex2.x + 1.0f) * img.get_width() / 2;
+        vertex2.y = (vertex2.y + 1.0f) * img.get_height() / 2;
+        vertex3.x = (vertex3.x + 1.0f) * img.get_width() / 2;
+        vertex3.y = (vertex3.y + 1.0f) * img.get_height() / 2;
+
+        vec3f verts[] { vertex1, vertex2, vertex3 };
+        float intensity = dotProduct(light, normal);
+        if (intensity > 0.0f)
+            my_gl::triangle(verts, img, TGAColor { intensity * 255, intensity * 255, intensity * 255, 255 });
+    }
+}
+
 } // namespace my_gl
