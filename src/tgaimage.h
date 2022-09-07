@@ -24,8 +24,9 @@ struct TGA_Header {
 };
 #pragma pack(pop) // El anterior pack(push, 1) se anula y vuelva a almacenar para un máximo de 4 bytes
                   // almenos para mi computadora(depende de la arquitectura del cpu)
-// Estructura donde se guarda la informacion del color, ocupa 8 bytes, pero al momento de escribir
-// informacion en el archivo de salidad se leen los 4 primeros bits normalmente
+
+// Estructura donde se guarda la informacion del color, ocupa 4 bytes, pero al momento de escribir
+// informacion en el archivo de salidad se leen los 3 primeros bytes normalmente
 struct TGAColor {
     // Union anonima, se puede acceder a sus miembros como si sus elementos fueran parte del contenedor
     union {
@@ -43,14 +44,16 @@ struct TGAColor {
 
     // Otros contructores utiles
 
-    TGAColor(std::uint8_t R, std::uint8_t G, std::uint8_t B, std::uint8_t A) : b(B), g(G), r(R), a(A), bytespp(4) {}
+    TGAColor(std::uint8_t R, std::uint8_t G, std::uint8_t B, std::uint8_t A)
+        : b(B), g(G), r(R), a(A), bytespp(4) {}
     TGAColor(int v, int bpp) : val(v), bytespp(bpp) {}
     TGAColor(const TGAColor& c) : val(c.val), bytespp(c.bytespp) {}
     TGAColor(const std::uint8_t* p, int bpp) : val(0), bytespp(bpp) { std::memcpy(raw, p, bpp); }
 
     // Redefinicion del operador de asigancion
     TGAColor& operator=(const TGAColor& c) {
-        if (this != &c) { // Verifica que c no tenga la misma direccion de memoria que this, que no sean el mismo objeto
+        if (this !=
+            &c) { // Verifica que c no tenga la misma direccion de memoria que this, que no sean el mismo objeto
             bytespp = c.bytespp;
             val = c.val;
         }
