@@ -12,7 +12,8 @@ vec3f toBarycentricCoord(vec3f* verts, vec2f point) {
     // vec3f y_values { r1_r2.y, r1_r3.y, p_r1.y };
     vec3f vecRes = crossProduct(vec3f { r1_r2.x, r1_r3.x, p_r1.x }, vec3f { r1_r2.y, r1_r3.y, p_r1.y });
 
-    if (std::abs(vecRes.z) < 1)
+    if (std::abs(vecRes.z) < 1e-2)
+    // if (std::abs(vecRes.z) < 1)
         return vec3f { -1, 1, 1 };
 
     vecRes = vecRes / vecRes.z;

@@ -14,17 +14,17 @@ const char* diablo3pose = "obj/diablo3_pose/diablo3_pose.obj";
 
 int main() {
     TGAImage img(width, height, TGAImage::Format::RGB);
-    Model model1 { boogie_body };
-    vec3f light { 0, 0, 1 };
+    Model model1 { diablo3pose };
 
     my_gl::simpleRender(model1, img);
 
     img.flip_vertically();
-    img.write_tga_file("test7.tga");
-    std::cout << "hecho" << '\n';
+    img.write_tga_file("diablo3pose4.tga");
+    std::cout << "Hecho" << '\n';
 }
 
 // TODO:
 /**
  * Refactorizar el código
+ * hacer que el zbuffer se comparta para dos modelos que conforman uno solo
  */
