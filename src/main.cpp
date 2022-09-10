@@ -14,12 +14,12 @@ const char* diablo3pose = "obj/diablo3_pose/diablo3_pose.obj";
 
 int main() {
     TGAImage img(width, height, TGAImage::Format::RGB);
-    Model model1 { diablo3pose };
+    Model model1 { african_head };
 
-    my_gl::simpleRender(model1, img);
+    my_gl::simpleRender(model1, img, vec3f { 0, 0, 1 });
 
     img.flip_vertically();
-    img.write_tga_file("diablo3pose4.tga");
+    img.write_tga_file("model13.tga");
     std::cout << "Hecho" << '\n';
 }
 

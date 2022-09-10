@@ -19,7 +19,7 @@ void line(vec2i p0, vec2i p1, TGAImage& img, const TGAColor& color);
 void triangle(vec3f* verts, float* zbuffer, TGAImage& img, const TGAColor& color);
 
 void wireRender(Model& model, const TGAColor& line_color, TGAImage& img);
-void simpleRender(Model& model, TGAImage& img);
+void simpleRender(Model& model, TGAImage& img, vec3f lightDirection);
 
 } // namespace my_gl
 

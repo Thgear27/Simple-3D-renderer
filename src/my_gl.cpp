@@ -113,7 +113,7 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     }
 }
 
-void simpleRender(Model& model, TGAImage& img) {
+void simpleRender(Model& model, TGAImage& img, vec3f lightDirection) {
     int width = img.get_width();
     int height = img.get_height();
     float* zbuffer = new float[width * height];
@@ -121,8 +121,7 @@ void simpleRender(Model& model, TGAImage& img) {
         zbuffer[i] = -std::numeric_limits<float>::max();
     }
 
-    vec3f light { 0, 0, 1 };
-    light.normalize();
+    lightDirection.normalize();
     for (int i = 0; i < model.getTotalFaces(); i++) {
         vec3f vertex1 = model.getVertex(i, 1);
         vec3f vertex2 = model.getVertex(i, 2);
@@ -130,25 +129,25 @@ void simpleRender(Model& model, TGAImage& img) {
 
         vertex1.x = (vertex1.x + 1.0f) * width / 2 + 0.5f;
         vertex1.y = (vertex1.y + 1.0f) * height / 2 + 0.5f;
-        // vertex1.z = (vertex1.z + 1.0f) * height / 2 + 0.5f;
-        vertex1.z = (vertex1.z + 1.0f) * width;
+        vertex1.z = (vertex1.z + 1.0f) * height / 2 + 0.5f;
+        // vertex1.z = (vertex1.z + 1.0f) * width;
 
         vertex2.x = (vertex2.x + 1.0f) * width / 2 + 0.5f;
         vertex2.y = (vertex2.y + 1.0f) * height / 2 + 0.5f;
-        // vertex2.z = (vertex2.z + 1.0f) * height / 2 + 0.5f;
-        vertex2.z = (vertex2.z + 1.0f) * width;
+        vertex2.z = (vertex2.z + 1.0f) * height / 2 + 0.5f;
+        // vertex2.z = (vertex2.z + 1.0f) * width;
 
         vertex3.x = (vertex3.x + 1.0f) * width / 2 + 0.5f;
         vertex3.y = (vertex3.y + 1.0f) * height / 2 + 0.5f;
-        // vertex3.z = (vertex3.z + 1.0f) * height / 2 + 0.5f;
-        vertex3.z = (vertex3.z + 1.0f) * width;
+        vertex3.z = (vertex3.z + 1.0f) * height / 2 + 0.5f;
+        // vertex3.z = (vertex3.z + 1.0f) * width;
 
         // vec3f normal = model.getVertexNormal(i, 1) + model.getVertexNormal(i, 2) + model.getVertexNormal(i, 3);
         vec3f normal = crossProduct(vertex2 - vertex1, vertex3 - vertex1);
         normal.normalize();
 
         vec3f verts[] { vertex1, vertex2, vertex3 };
-        float intensity = dotProduct(light, normal);
+        float intensity = dotProduct(lightDirection, normal);
 
         // if (intensity > 0.0f) {
         int rgb = (intensity < 0.0f) ? 0 : intensity * 255;
