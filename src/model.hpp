@@ -27,6 +27,7 @@ public:
 
     vec3f getVertex(int face_index, int which_vertex);
     vec3f getVertexNormal(int face_index, int which_vertex);
+    vec3f getVertexTexture(int face_index, int which_vertex);
 
 private:
     int total_v { 0 };
