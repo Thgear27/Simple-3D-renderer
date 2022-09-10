@@ -232,5 +232,6 @@ T dotProduct(const vec<size, T>& lhs, const vec<size, T>& rhs) {
 ////////////////////////////////////////////////////////////////
 // Geometric Baricentric Coords
 vec3f toBarycentricCoord(vec3f* verts, vec2f point);
+vec3f toBarycentricCoord(vec2f* verts, vec2f point);
 
 #endif // MATH_H
