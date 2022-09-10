@@ -101,12 +101,12 @@ vec3f Model::getVertexNormal(int face_index, int which_vertex) {
     if (!(which_vertex <= 3 && which_vertex >= 1))
         std::cout << "parametro wich_vertex tiene que ser de 1 a 3\n";
     assert(which_vertex <= 3 && which_vertex >= 1);
-    return vertices[faces[face_index].vn_idx[which_vertex - 1]];
+    return vertices_normals[faces[face_index].vn_idx[which_vertex - 1]];
 }
 
-vec3f Model::getVertexTexture(int face_index, int which_vertex) {
+vec2f Model::getVertexTexture(int face_index, int which_vertex) {
     if (!(which_vertex <= 3 && which_vertex >= 1))
         std::cout << "parametro wich_vertex tiene que ser de 1 a 3\n";
     assert(which_vertex <= 3 && which_vertex >= 1);
-    return vertices[faces[face_index].vt_idx[which_vertex - 1]];
+    return vertices_textures[faces[face_index].vt_idx[which_vertex - 1]];
 }
