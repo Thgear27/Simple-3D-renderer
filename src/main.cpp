@@ -13,17 +13,17 @@ const char* african_head_texture_img = "obj/african_head/african_head_diffuse.tg
 const char* boogie_head = "obj/boggie/head.obj";
 const char* boogie_body = "obj/boggie/body.obj";
 const char* diablo3pose = "obj/diablo3_pose/diablo3_pose.obj";
-const char* diablo3pose_texture_img = "obj/diablo3_pose/diablo3_pose_glow.tga";
+const char* diablo3pose_texture_img = "obj/diablo3_pose/diablo3_pose_diffuse.tga";
 
 int main() {
     TGAImage img(width, height, TGAImage::Format::RGB);
     TGAImage textureImg;
-    textureImg.read_tga_file("obj/diablo3_pose/diablo3_pose_spec.tga");
+    textureImg.read_tga_file(diablo3pose_texture_img);
     textureImg.flip_vertically();
 
     Model model1 { diablo3pose };
 
-    my_gl::simpleRender(model1, textureImg, img, vec3f { 0, 0, 1 });
+    my_gl::simpleRender(model1, textureImg, img, vec3f { 1, 0, 1 });
 
     img.flip_vertically();
     img.write_tga_file("model13.tga");

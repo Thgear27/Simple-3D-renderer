@@ -127,45 +127,29 @@ void simpleRender(Model& model, TGAImage& textureImg, TGAImage& outputImg, vec3f
     lightDirection.normalize();
 
     vec2f* modelUvCoords = new vec2f[3];
+    vec3f* modelVerts = new vec3f[3];
     for (int i = 0; i < model.getTotalFaces(); i++) {
         for (int coordIndex = 0; coordIndex < 3; coordIndex++) {
             modelUvCoords[coordIndex] = model.getVertexTexture(i, coordIndex + 1);
         }
 
-        vec3f vertex1 = model.getVertex(i, 1);
-        vec3f vertex2 = model.getVertex(i, 2);
-        vec3f vertex3 = model.getVertex(i, 3);
+        for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
+            modelVerts[vertexIndex] = model.getVertex(i, vertexIndex + 1);
+            modelVerts[vertexIndex].x = (modelVerts[vertexIndex].x + 1.0f) * width / 2 + 0.5f;
+            modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f) * height / 2 + 0.5f;
+            modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f) * height / 2 + 0.5f;
+        }
 
-        vertex1.x = (vertex1.x + 1.0f) * width / 2 + 0.5f;
-        vertex1.y = (vertex1.y + 1.0f) * height / 2 + 0.5f;
-        vertex1.z = (vertex1.z + 1.0f) * height / 2 + 0.5f;
-        // vertex1.z = (vertex1.z + 1.0f) * width;
-
-        vertex2.x = (vertex2.x + 1.0f) * width / 2 + 0.5f;
-        vertex2.y = (vertex2.y + 1.0f) * height / 2 + 0.5f;
-        vertex2.z = (vertex2.z + 1.0f) * height / 2 + 0.5f;
-        // vertex2.z = (vertex2.z + 1.0f) * width;
-
-        vertex3.x = (vertex3.x + 1.0f) * width / 2 + 0.5f;
-        vertex3.y = (vertex3.y + 1.0f) * height / 2 + 0.5f;
-        vertex3.z = (vertex3.z + 1.0f) * height / 2 + 0.5f;
-        // vertex3.z = (vertex3.z + 1.0f) * width;
-
-        // vec3f normal = model.getVertexNormal(i, 1) + model.getVertexNormal(i, 2) + model.getVertexNormal(i, 3);
-        vec3f normal = crossProduct(vertex2 - vertex1, vertex3 - vertex1);
+        vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
         normal.normalize();
 
-        vec3f verts[] { vertex1, vertex2, vertex3 };
         float intensity = dotProduct(lightDirection, normal);
 
-        // if (intensity > 0.0f) {
-        int rgb = (intensity < 0.0f) ? 0 : intensity * 255;
-        my_gl::triangle(verts, zbuffer, textureImg, modelUvCoords, outputImg, intensity);
-        // }
-        // my_gl::triangle(verts, zbuffer, img, TGAColor { rand() % 255, rand() % 255, rand() % 255, 255 });
+        my_gl::triangle(modelVerts, zbuffer, textureImg, modelUvCoords, outputImg, intensity);
     }
     delete[] modelUvCoords;
     delete[] zbuffer;
+    delete[] modelVerts;
 }
 
 } // namespace my_gl
