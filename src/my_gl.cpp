@@ -39,30 +39,37 @@ void line(vec2i p0, vec2i p1, TGAImage& img, const TGAColor& color) {
     }
 }
 
-void triangle(vec3f* verts, float* zbuffer, TGAImage& img, const TGAColor& color) {
+TGAColor getColorFromTexture(vec2f* uvCoords, vec3f baryCoords, TGAImage& textureImg) {
+    // vec2i uvCoords_int[3];
+    vec2f uvCoordsCpy[3];
+    for (int i = 0; i < 3; i++) {
+        uvCoordsCpy[i] = uvCoords[i];
+    }
+
+    for (int i = 0; i < 3; i++) {
+        uvCoordsCpy[i].x = uvCoords[i].x * textureImg.get_width();
+        uvCoordsCpy[i].y = uvCoords[i].y * textureImg.get_height();
+    }
+    vec2f point = uvCoordsCpy[0] * baryCoords.x + uvCoordsCpy[1] * baryCoords.y + uvCoordsCpy[2] * baryCoords.z;
+    return textureImg.get((int)point.x, (int)point.y);
+}
+
+void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg,
+              float intensity) {
     vec3f verts_i[3] {};
 
     for (int i = 0; i < 3; i++) {
         verts_i[i] = (vec3i)verts[i];
     }
 
-    // DEBUGADO
-    // for (int i = 0; i < 3; i++) {
-    //     img.set(verts_i[i].x, verts_i[i].y, color::red);
-    // }
-    // line(discard_Z(verts_i[0]), discard_Z(verts_i[1]), img, color::red);
-    // line(discard_Z(verts_i[2]), discard_Z(verts_i[1]), img, color::red);
-    // line(discard_Z(verts_i[0]), discard_Z(verts_i[2]), img, color::red);
-    // DEBUGADO
-
-    vec2f boxmin = vec2f { (float)img.get_width(), (float)img.get_height() };
+    vec2f boxmin = vec2f { (float)outputImg.get_width(), (float)outputImg.get_height() };
     vec2f boxmax {};
     for (int i = 0; i < 3; i++) {
         boxmin.x = std::max(0.0f, std::min(boxmin.x, verts_i[i].x));
         boxmin.y = std::max(0.0f, std::min(boxmin.y, verts_i[i].y));
 
-        boxmax.x = std::min((float)img.get_width(), std::max(boxmax.x, verts_i[i].x));
-        boxmax.y = std::min((float)img.get_height(), std::max(boxmax.y, verts_i[i].y));
+        boxmax.x = std::min((float)outputImg.get_width(), std::max(boxmax.x, verts_i[i].x));
+        boxmax.y = std::min((float)outputImg.get_height(), std::max(boxmax.y, verts_i[i].y));
     }
 
     float vertex_z_value = 0;
@@ -72,22 +79,18 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& img, const TGAColor& color
             if (bcoord.x < 0.0f || bcoord.y < 0.0f || bcoord.z < 0.0f)
                 continue;
 
+            TGAColor TexturePixelColor = getColorFromTexture(uvCoords, bcoord, textureImg);
+            for (int i = 0; i < 3; i++) {
+                TexturePixelColor.raw[i] = (intensity < 0.0f) ? 0 : intensity * TexturePixelColor.raw[i];
+            }
+
             vertex_z_value = verts_i[0].z * bcoord.x + verts_i[1].z * bcoord.y + verts_i[2].z * bcoord.z;
-            if (vertex_z_value > zbuffer[x + y * img.get_width()]) {
-                zbuffer[x + y * img.get_width()] = vertex_z_value;
-                img.set(x, y, color);
+            if (vertex_z_value > zbuffer[x + y * outputImg.get_width()]) {
+                zbuffer[x + y * outputImg.get_width()] = vertex_z_value;
+                outputImg.set(x, y, TexturePixelColor);
             }
         }
     }
-
-    // DEBUGADO
-    // std::cout << "Vertices:\n";
-    // for (int i = 0; i < 3; i++) {
-    //     std::cout << verts[i] << "\t\t" << verts_i[i] << '\n';
-    // }
-    // std::cout << "Punto minimo de la caja" << boxmin << '\n';
-    // std::cout << "Punto maximo de la caja" << boxmax << '\n';
-    // DEBUGADO
 }
 
 void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
@@ -113,49 +116,40 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     }
 }
 
-void simpleRender(Model& model, TGAImage& img, vec3f lightDirection) {
-    int width = img.get_width();
-    int height = img.get_height();
+void simpleRender(Model& model, TGAImage& textureImg, TGAImage& outputImg, vec3f lightDirection) {
+    int width = outputImg.get_width();
+    int height = outputImg.get_height();
     float* zbuffer = new float[width * height];
     for (int i = 0; i < width * height; i++) {
         zbuffer[i] = -std::numeric_limits<float>::max();
     }
 
     lightDirection.normalize();
+
+    vec2f* modelUvCoords = new vec2f[3];
+    vec3f* modelVerts = new vec3f[3];
     for (int i = 0; i < model.getTotalFaces(); i++) {
-        vec3f vertex1 = model.getVertex(i, 1);
-        vec3f vertex2 = model.getVertex(i, 2);
-        vec3f vertex3 = model.getVertex(i, 3);
+        for (int coordIndex = 0; coordIndex < 3; coordIndex++) {
+            modelUvCoords[coordIndex] = model.getVertexTexture(i, coordIndex + 1);
+        }
 
-        vertex1.x = (vertex1.x + 1.0f) * width / 2 + 0.5f;
-        vertex1.y = (vertex1.y + 1.0f) * height / 2 + 0.5f;
-        vertex1.z = (vertex1.z + 1.0f) * height / 2 + 0.5f;
-        // vertex1.z = (vertex1.z + 1.0f) * width;
+        for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
+            modelVerts[vertexIndex] = model.getVertex(i, vertexIndex + 1);
+            modelVerts[vertexIndex].x = (modelVerts[vertexIndex].x + 1.0f) * width / 2 + 0.5f;
+            modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f) * height / 2 + 0.5f;
+            modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f) * height / 2 + 0.5f;
+        }
 
-        vertex2.x = (vertex2.x + 1.0f) * width / 2 + 0.5f;
-        vertex2.y = (vertex2.y + 1.0f) * height / 2 + 0.5f;
-        vertex2.z = (vertex2.z + 1.0f) * height / 2 + 0.5f;
-        // vertex2.z = (vertex2.z + 1.0f) * width;
-
-        vertex3.x = (vertex3.x + 1.0f) * width / 2 + 0.5f;
-        vertex3.y = (vertex3.y + 1.0f) * height / 2 + 0.5f;
-        vertex3.z = (vertex3.z + 1.0f) * height / 2 + 0.5f;
-        // vertex3.z = (vertex3.z + 1.0f) * width;
-
-        // vec3f normal = model.getVertexNormal(i, 1) + model.getVertexNormal(i, 2) + model.getVertexNormal(i, 3);
-        vec3f normal = crossProduct(vertex2 - vertex1, vertex3 - vertex1);
+        vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
         normal.normalize();
 
-        vec3f verts[] { vertex1, vertex2, vertex3 };
         float intensity = dotProduct(lightDirection, normal);
 
-        // if (intensity > 0.0f) {
-        int rgb = (intensity < 0.0f) ? 0 : intensity * 255;
-        my_gl::triangle(verts, zbuffer, img, TGAColor { (uint8_t)rgb, (uint8_t)rgb, (uint8_t)rgb, 255 });
-        // }
-        // my_gl::triangle(verts, zbuffer, img, TGAColor { rand() % 255, rand() % 255, rand() % 255, 255 });
+        my_gl::triangle(modelVerts, zbuffer, textureImg, modelUvCoords, outputImg, intensity);
     }
+    delete[] modelUvCoords;
     delete[] zbuffer;
+    delete[] modelVerts;
 }
 
 } // namespace my_gl
