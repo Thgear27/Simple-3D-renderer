@@ -12,14 +12,16 @@ struct face {
 
 class Model {
 public:
-    Model() = default;
-    Model(const char* filename);
+    enum Format { no_vt, with_vt };
+
+    Model(const char* filename, Format l_format);
     ~Model();
 
     int getTotalFaces() { return total_faces; }
     int getTotalVertices() { return total_v; }
     int getTotalVertsTextures() { return total_vt; }
     int getTotalVertsNormals() { return total_vn; }
+    Format getFormat() { return format; }
 
     bool load_model_from_file(const char* filename);
 
@@ -30,6 +32,8 @@ public:
     vec2f getVertexTexture(int face_index, int which_vertex);
 
 private:
+    Format format;
+
     int total_v { 0 };
     int total_vt { 0 };
     int total_vn { 0 };

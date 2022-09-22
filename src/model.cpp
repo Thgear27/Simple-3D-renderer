@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-Model::Model(const char* filename) { load_model_from_file(filename); }
+Model::Model(const char* filename, Format l_format) : format(l_format) { load_model_from_file(filename); }
 
 Model::~Model() {}
 
@@ -69,13 +69,20 @@ bool Model::load_model_from_file(const char* filename) {
             for (int i = 0; i < 3; i++) {
                 line_stream >> temp_face.v_idx[i];
                 line_stream >> trash;
-                line_stream >> temp_face.vt_idx[i];
+                
+                if (format == Format::with_vt) {
+                    line_stream >> temp_face.vt_idx[i];
+                }
+
                 line_stream >> trash;
                 line_stream >> temp_face.vn_idx[i];
 
                 temp_face.v_idx[i]--;
                 temp_face.vt_idx[i]--;
                 temp_face.vn_idx[i]--;
+            }
+            if (line_stream.fail()) {
+                std::cerr << "Ya nos cargo la verga\n";
             }
             faces.push_back(temp_face);
             total_faces++;
