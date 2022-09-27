@@ -27,9 +27,9 @@ public:
 
     // Member functions added
 
-    vec3f getVertex(int face_index, int which_vertex);
-    vec3f getVertexNormal(int face_index, int which_vertex);
-    vec2f getVertexTexture(int face_index, int which_vertex);
+    vec3f& getVertex(int face_index, int which_vertex);
+    vec3f& getVertexNormal(int face_index, int which_vertex);
+    vec2f& getVertexTexture(int face_index, int which_vertex);
 
 private:
     Format format;
