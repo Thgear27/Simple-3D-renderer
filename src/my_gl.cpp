@@ -7,7 +7,6 @@
 namespace my_gl {
 
 void line(vec2i p0, vec2i p1, TGAImage& img, const TGAColor& color) {
-
     bool inverted_plane = false;
     if (std::abs(p1.y - p0.y) > std::abs(p1.x - p0.x)) { // Triangulo con pendiente mayor a 1
         std::swap(p0.x, p0.y);
@@ -41,22 +40,26 @@ void line(vec2i p0, vec2i p1, TGAImage& img, const TGAColor& color) {
 
 TGAColor getColorFromTexture(vec2f* uvCoords, vec3f baryCoords, TGAImage& textureImg) {
     // vec2i uvCoords_int[3];
+    int img_width = textureImg.get_width();
+    int img_height = textureImg.get_height();
+
     vec2f uvCoordsCpy[3];
     for (int i = 0; i < 3; i++) {
         uvCoordsCpy[i] = uvCoords[i];
     }
 
     for (int i = 0; i < 3; i++) {
-        uvCoordsCpy[i].x = uvCoords[i].x * textureImg.get_width();
-        uvCoordsCpy[i].y = uvCoords[i].y * textureImg.get_height();
+        uvCoordsCpy[i].x = uvCoords[i].x * img_width;
+        uvCoordsCpy[i].y = uvCoords[i].y * img_height;
     }
     vec2f point = uvCoordsCpy[0] * baryCoords.x + uvCoordsCpy[1] * baryCoords.y + uvCoordsCpy[2] * baryCoords.z;
     return textureImg.get((int)point.x, (int)point.y);
 }
 
-void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg,
-              float intensity) {
+void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg, float intensity) {
     vec3f verts_i[3] {};
+    float img_width = outputImg.get_width();
+    float img_height = outputImg.get_height();
 
     for (int i = 0; i < 3; i++) {
         verts_i[i] = (vec3i)verts[i];
@@ -68,8 +71,8 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoord
         boxmin.x = std::max(0.0f, std::min(boxmin.x, verts_i[i].x));
         boxmin.y = std::max(0.0f, std::min(boxmin.y, verts_i[i].y));
 
-        boxmax.x = std::min((float)outputImg.get_width(), std::max(boxmax.x, verts_i[i].x));
-        boxmax.y = std::min((float)outputImg.get_height(), std::max(boxmax.y, verts_i[i].y));
+        boxmax.x = std::min(img_width, std::max(boxmax.x, verts_i[i].x));
+        boxmax.y = std::min(img_height, std::max(boxmax.y, verts_i[i].y));
     }
 
     float vertex_z_value = 0;
@@ -116,39 +119,35 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     }
 }
 
-void simpleRender(Model& model, TGAImage& textureImg, TGAImage& outputImg, vec3f lightDirection) {
-    int width = outputImg.get_width();
-    int height = outputImg.get_height();
-    float* zbuffer = new float[width * height];
-    for (int i = 0; i < width * height; i++) {
-        zbuffer[i] = -std::numeric_limits<float>::max();
-    }
+void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDirection) {
+    int width      = outputImg.get_width();
+    int height     = outputImg.get_height();
 
     lightDirection.normalize();
 
-    vec2f* modelUvCoords = new vec2f[3];
-    vec3f* modelVerts = new vec3f[3];
+    vec2f* modelUvCoords = new vec2f[3] { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f } };
+    vec3f* modelVerts    = new vec3f[3] {};
     for (int i = 0; i < model.getTotalFaces(); i++) {
         for (int coordIndex = 0; coordIndex < 3; coordIndex++) {
-            modelUvCoords[coordIndex] = model.getVertexTexture(i, coordIndex + 1);
+
+            if (model.getFormat() == Model::Format::with_vt)
+                modelUvCoords[coordIndex] = model.getVertexTexture(i, coordIndex + 1);
         }
 
         for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
-            modelVerts[vertexIndex] = model.getVertex(i, vertexIndex + 1);
-            modelVerts[vertexIndex].x = (modelVerts[vertexIndex].x + 1.0f) * width / 2 + 0.5f;
-            modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f) * height / 2 + 0.5f;
-            modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f) * height / 2 + 0.5f;
+            modelVerts[vertexIndex]   = model.getVertex(i, vertexIndex + 1);
+            modelVerts[vertexIndex].x = (modelVerts[vertexIndex].x + 1.0f)  * width  / 2;
+            modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f)  * height / 2;
+            modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
         }
 
         vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
         normal.normalize();
-
         float intensity = dotProduct(lightDirection, normal);
 
-        my_gl::triangle(modelVerts, zbuffer, textureImg, modelUvCoords, outputImg, intensity);
+        my_gl::triangle(modelVerts, img_zbuffer, textureImg, modelUvCoords, outputImg, intensity);
     }
     delete[] modelUvCoords;
-    delete[] zbuffer;
     delete[] modelVerts;
 }
 
