@@ -35,7 +35,7 @@ vec3f toBarycentricCoord(vec2f* verts, vec2f point) {
     return (vec3f { 1.0f - (vecRes.x + vecRes.y), vecRes.x, vecRes.y });
 }
 
-Matrix toHomogeneousCoord(const vec2f& vec) {
+Matrix vecToMat(const vec2f& vec) {
     std::cerr << "Ejecutado\n";
     Matrix mat { 3, 1 };
     mat[0] = { vec.x };
@@ -43,7 +43,7 @@ Matrix toHomogeneousCoord(const vec2f& vec) {
     mat[2] = { 1 };
     return mat;
 }
-Matrix toHomogeneousCoord(const vec3f& vec) {
+Matrix vecToMat(const vec3f& vec) {
     Matrix mat { 4, 1 };
     mat[0] = { vec.x };
     mat[1] = { vec.y };

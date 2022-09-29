@@ -237,8 +237,8 @@ vec3f toBarycentricCoord(vec2f* verts, vec2f point);
 
 ////////////////////////////////////////////////////////////////
 // some Matrix functions 
-Matrix toHomogeneousCoord(const vec2f& vec);
-Matrix toHomogeneousCoord(const vec3f& vec);
+Matrix vecToMat(const vec2f& vec);
+Matrix vecToMat(const vec3f& vec);
 const vec2f  matToVec2(const Matrix& mat);
 const vec3f  matToVec3(const Matrix& mat);
 
