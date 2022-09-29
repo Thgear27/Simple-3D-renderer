@@ -1,6 +1,7 @@
 #ifndef MATH_H
 #define MATH_H
 
+#include "matrix.hpp"
 #include <array>
 #include <cmath>
 #include <iostream>
@@ -233,5 +234,12 @@ T dotProduct(const vec<size, T>& lhs, const vec<size, T>& rhs) {
 // Geometric Baricentric Coords
 vec3f toBarycentricCoord(vec3f* verts, vec2f point);
 vec3f toBarycentricCoord(vec2f* verts, vec2f point);
+
+////////////////////////////////////////////////////////////////
+// some Matrix functions 
+Matrix toHomogeneousCoord(const vec2f& vec);
+Matrix toHomogeneousCoord(const vec3f& vec);
+const vec2f  matToVec2(const Matrix& mat);
+const vec3f  matToVec3(const Matrix& mat);
 
 #endif // MATH_H
