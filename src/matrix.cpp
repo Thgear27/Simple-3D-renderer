@@ -15,7 +15,6 @@ Matrix::Matrix(int rows, int columns) :  num_rows(rows), num_columns(columns) {
 }
 
 Matrix::Matrix(const Matrix& cpymat) {
-    std::cerr << "copy constructor llamado\n";
     num_rows    = cpymat.num_rows;
     num_columns = cpymat.num_columns;
 

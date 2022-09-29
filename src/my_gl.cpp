@@ -129,7 +129,6 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
     vec3f* modelVerts    = new vec3f[3] {};
     for (int i = 0; i < model.getTotalFaces(); i++) {
         for (int coordIndex = 0; coordIndex < 3; coordIndex++) {
-
             if (model.getFormat() == Model::Format::with_vt)
                 modelUvCoords[coordIndex] = model.getVertexTexture(i, coordIndex + 1);
         }
@@ -139,6 +138,9 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             modelVerts[vertexIndex].x = (modelVerts[vertexIndex].x + 1.0f)  * width  / 2;
             modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f)  * height / 2;
             modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
+
+            Matrix hmgcoords = vecToMat(modelVerts[vertexIndex]);
+            modelVerts[vertexIndex] = matToVec3(zoom(0.2f) * hmgcoords);
         }
 
         vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
@@ -149,6 +151,14 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
     }
     delete[] modelUvCoords;
     delete[] modelVerts;
+}
+
+Matrix zoom(float factor) {
+    Matrix mat = Matrix::Identity(4);
+    mat[0][0] = factor; 
+    mat[1][1] = factor; 
+    mat[2][2] = factor; 
+    return mat;
 }
 
 } // namespace my_gl

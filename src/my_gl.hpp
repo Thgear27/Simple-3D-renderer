@@ -22,6 +22,8 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img);
 void simpleRender(Model& model,TGAImage& textureImg, float* img_zbuffer,TGAImage& outputImg, vec3f lightDirection);
 TGAColor getColorFromTexture (vec2f* uvCoords, vec3f baryCoords, TGAImage& textureImg);
 
+Matrix zoom(float factor);
+
 } // namespace my_gl
 
 #endif // MY_GL_H
