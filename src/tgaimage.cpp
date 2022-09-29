@@ -356,7 +356,7 @@ TGAColor TGAImage::get(int x, int y) {
 
 bool TGAImage::set(int x, int y, const TGAColor& c) {
     if (!m_data || x < 0 || y < 0 || x >= m_width || y >= m_height) {
-        std::cout << "out of bounds of the image\n";
+        // std::cout << "Out of bounds";
         return false;
     }
     std::memcpy(m_data + (x + y * m_width) * m_bytespp, c.raw, m_bytespp);
