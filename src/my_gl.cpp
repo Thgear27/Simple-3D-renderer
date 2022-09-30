@@ -102,11 +102,11 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
         vec2f vertex2 = discard_Z(model.getVertex(i, 2));
         vec2f vertex3 = discard_Z(model.getVertex(i, 3));
 
-        vertex1.x = (vertex1.x + 1.0f) * img.get_width() / 2;
+        vertex1.x = (vertex1.x + 2.5f) * img.get_width() / 2;
         vertex1.y = (vertex1.y + 1.0f) * img.get_height() / 2;
-        vertex2.x = (vertex2.x + 1.0f) * img.get_width() / 2;
+        vertex2.x = (vertex2.x + 2.5f) * img.get_width() / 2;
         vertex2.y = (vertex2.y + 1.0f) * img.get_height() / 2;
-        vertex3.x = (vertex3.x + 1.0f) * img.get_width() / 2;
+        vertex3.x = (vertex3.x + 2.5f) * img.get_width() / 2;
         vertex3.y = (vertex3.y + 1.0f) * img.get_height() / 2;
 
         vec2i v1 { (int)vertex1.x, (int)vertex1.y };
@@ -140,7 +140,7 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
 
             // TRANSFORMATIONS
-            float c = 300;
+            float c = 1500;
             Matrix mat = Matrix::Identity(4);
             mat[0] = { 1, 0, 0, 0 };
             mat[1] = { 0, 1, 0, 0 };
@@ -150,8 +150,8 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             Matrix hmgcoords = vecToMat(modelVerts[vertexIndex]);
             modelVerts[vertexIndex] = matToVec3(
                   translate(width / 2, height / 2, 0)
-                * mat
-                * zoom(0.5f)
+                // * mat
+                // * zoom(0.6f)
                 * translate(-width / 2, -height / 2, 0)
                 * hmgcoords
             );

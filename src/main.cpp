@@ -5,8 +5,8 @@
 #include <fstream>
 #include <iostream>
 
-constexpr int height { 500 };
-constexpr int width  { 500 };
+constexpr int height { 1000 };
+constexpr int width  { 1000 };
 
 const char* african_head             = "obj/african_head/african_head.obj";
 const char* african_head_texture_img = "obj/african_head/african_head_diffuse.tga";
@@ -28,10 +28,10 @@ const char* diablo3pose_texture_img = "obj/diablo3_pose/diablo3_pose_diffuse.tga
 
 int main() {
     TGAImage img { width, height, TGAImage::Format::RGB };
-    Model modelo(diablo3pose, Model::Format::with_vt);
+    Model modelo( african_head, Model::Format::with_vt);
 
     TGAImage textureImg {};
-    textureImg.read_tga_file(diablo3pose_texture_img);
+    textureImg.read_tga_file(african_head_texture_img);
     textureImg.flip_vertically();
 
     float* zbuffer = new float[width * height];
@@ -39,11 +39,11 @@ int main() {
         zbuffer[i] = -std::numeric_limits<float>::max();
     }
 
-    my_gl::simpleRender(modelo, textureImg, zbuffer, img, vec3f { 0, 0, 1 });
+    my_gl::simpleRender(modelo, textureImg, zbuffer, img, vec3f { 0, -1, 1 });
     std::cout << "Renderizacion hecha...\n";
 
     img.flip_vertically();
-    img.write_tga_file("test5.tga");
+    img.write_tga_file("test10.tga");
     std::cout << "done..." << '\n';
     return 0;
 }
