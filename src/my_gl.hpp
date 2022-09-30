@@ -23,6 +23,9 @@ void simpleRender(Model& model,TGAImage& textureImg, float* img_zbuffer,TGAImage
 TGAColor getColorFromTexture (vec2f* uvCoords, vec3f baryCoords, TGAImage& textureImg);
 
 Matrix zoom(float factor);
+Matrix translate(int x, int y, int z);
+Matrix rotate(float angle);
+Matrix shear(float x, float y);
 
 } // namespace my_gl
 

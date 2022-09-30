@@ -139,8 +139,23 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f)  * height / 2;
             modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
 
+            // TRANSFORMATIONS
+            float c = 300;
+            Matrix mat = Matrix::Identity(4);
+            mat[0] = { 1, 0, 0, 0 };
+            mat[1] = { 0, 1, 0, 0 };
+            mat[2] = { 0, 0, 1, 0 };
+            mat[3] = { 0, 0, -1/c, 1 };
+
             Matrix hmgcoords = vecToMat(modelVerts[vertexIndex]);
-            modelVerts[vertexIndex] = matToVec3(zoom(0.2f) * hmgcoords);
+            modelVerts[vertexIndex] = matToVec3(
+                  translate(width / 2, height / 2, 0)
+                * mat
+                * zoom(0.5f)
+                * translate(-width / 2, -height / 2, 0)
+                * hmgcoords
+            );
+            // TRANSFORMATIONS
         }
 
         vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
@@ -158,6 +173,30 @@ Matrix zoom(float factor) {
     mat[0][0] = factor; 
     mat[1][1] = factor; 
     mat[2][2] = factor; 
+    return mat;
+}
+
+Matrix translate(int x, int y, int z) {
+    Matrix mat = Matrix::Identity(4);
+    mat[0][3] = x;
+    mat[1][3] = y;
+    mat[2][3] = z;
+    return mat;
+}
+
+Matrix rotate(float angle) {
+    Matrix mat = Matrix::Identity(4);
+    mat[0][0] = std::cos(angle);
+    mat[0][1] = -std::sin(angle);
+    mat[1][0] = std::sin(angle);
+    mat[1][1] = std::cos(angle);
+    return mat;
+}
+
+Matrix shear(float x, float y) {
+    Matrix mat = Matrix::Identity(4);
+    mat[0][1] = x;
+    mat[1][0] = y;
     return mat;
 }
 
