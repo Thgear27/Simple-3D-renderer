@@ -56,7 +56,21 @@ TGAColor getColorFromTexture(vec2f* uvCoords, vec3f baryCoords, TGAImage& textur
     return textureImg.get((int)point.x, (int)point.y);
 }
 
-void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg, float intensity) {
+float getSmoothIntensity(vec3f* vec_normals, vec3f bcoord, vec3f lightDirection) {
+    vec3f normalResult = vec_normals[0] * bcoord.x + vec_normals[1] * bcoord.y + vec_normals[2] * bcoord.z ;
+    float intensity = dotProduct(normalResult, lightDirection);
+    return (intensity < 0.0f) ?  0.0f : intensity;
+}
+
+float getFaceIntensity(vec3f* modelVerts, vec3f lightDirNormalized) {
+    vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
+    normal.normalize();
+    lightDirNormalized.normalize();
+    float intensity = dotProduct(normal, lightDirNormalized);
+    return (intensity < 0.0f) ?  0.0f : intensity;
+}
+
+void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg, vec3f* vec_normals, vec3f lightDir, bool smoothShadow) {
     vec3f verts_i[3] {};
     float img_width = outputImg.get_width();
     float img_height = outputImg.get_height();
@@ -82,15 +96,23 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoord
             if (bcoord.x < 0.0f || bcoord.y < 0.0f || bcoord.z < 0.0f)
                 continue;
 
-            TGAColor TexturePixelColor = getColorFromTexture(uvCoords, bcoord, textureImg);
-            for (int i = 0; i < 3; i++) {
-                TexturePixelColor.raw[i] = (intensity < 0.0f) ? 0 : intensity * TexturePixelColor.raw[i];
+            TGAColor TxturePxlColor = getColorFromTexture(uvCoords, bcoord, textureImg);
+            
+            if (smoothShadow) {
+                for (int i = 0; i < 3; i++) {
+                    TxturePxlColor.raw[i] = getSmoothIntensity(vec_normals, bcoord, lightDir) * TxturePxlColor.raw[i];
+                }
+            } else {
+                float intensity = getFaceIntensity(verts, lightDir);
+                for (int i = 0; i < 3; i++) {
+                    TxturePxlColor.raw[i] = intensity * TxturePxlColor.raw[i];
+                }
             }
 
             vertex_z_value = verts_i[0].z * bcoord.x + verts_i[1].z * bcoord.y + verts_i[2].z * bcoord.z;
             if (vertex_z_value > zbuffer[x + y * outputImg.get_width()]) {
                 zbuffer[x + y * outputImg.get_width()] = vertex_z_value;
-                outputImg.set(x, y, TexturePixelColor);
+                outputImg.set(x, y, TxturePxlColor);
             }
         }
     }
@@ -140,12 +162,20 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
 
     lightDirection.normalize();
 
-    vec2f* modelUvCoords = new vec2f[3] { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f } };
-    vec3f* modelVerts    = new vec3f[3] {};
+    vec2f* modelUvCoords     = new vec2f[3] { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f } };
+    vec3f* modelVerts        = new vec3f[3] {};
+    vec3f* modelVertsNormals = new vec3f[3] {};
     for (int i = 0; i < model.getTotalFaces(); i++) {
+        
+        // Carga las vertex textures
         for (int coordIndex = 0; coordIndex < 3; coordIndex++) {
             if (model.getFormat() == Model::Format::with_vt)
                 modelUvCoords[coordIndex] = model.getVertexTexture(i, coordIndex + 1);
+        }
+
+        // Carga las vertext Normals
+        for (int coordIndex = 0; coordIndex < 3; coordIndex++) {
+            modelVertsNormals[coordIndex] = model.getVertexNormal(i, coordIndex + 1);
         }
 
         for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
@@ -165,8 +195,8 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             Matrix hmgcoords = vecToMat(modelVerts[vertexIndex]);
             modelVerts[vertexIndex] = matToVec3(
                   translate(width / 2, height / 2, 0)
-                * mat
-                * zoom(0.6f)
+                // * mat
+                // * zoom(0.4f)
                 * translate(-width / 2, -height / 2, 0)
                 * hmgcoords
             );
@@ -177,10 +207,11 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
         normal.normalize();
         float intensity = dotProduct(lightDirection, normal);
 
-        my_gl::triangle(modelVerts, img_zbuffer, textureImg, modelUvCoords, outputImg, intensity);
+        my_gl::triangle(modelVerts, img_zbuffer, textureImg, modelUvCoords, outputImg, modelVertsNormals, lightDirection, false);
     }
     delete[] modelUvCoords;
     delete[] modelVerts;
+    delete[] modelVertsNormals;
 }
 
 Matrix zoom(float factor) {
