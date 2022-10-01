@@ -7,14 +7,14 @@
 
 namespace color {
 
-const TGAColor red { 255, 0, 0, 255 };
-const TGAColor white = { 255, 255, 255, 255 };
+const TGAColor red     { 255, 0, 0, 255 };
+const TGAColor white   { 255, 255, 255, 255 };
 
 } // namespace color
 
 namespace my_gl {
 
-void line(vec2i p0, vec2i p1, TGAImage& img, const TGAColor& color);
+void line(vec3i p0, vec3i p1, TGAImage& img, const TGAColor& color);
 
 void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg, float intensity);
 

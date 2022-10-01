@@ -6,7 +6,7 @@
 
 namespace my_gl {
 
-void line(vec2i p0, vec2i p1, TGAImage& img, const TGAColor& color) {
+void line(vec3i p0, vec3i p1, TGAImage& img, const TGAColor& color) {
     bool inverted_plane = false;
     if (std::abs(p1.y - p0.y) > std::abs(p1.x - p0.x)) { // Triangulo con pendiente mayor a 1
         std::swap(p0.x, p0.y);
@@ -97,26 +97,41 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoord
 }
 
 void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
+    int width  = img.get_width();
+    int height = img.get_height();
+
+    vec3f* modelVerts    = new vec3f[3] {};
     for (int i = 0; i < model.getTotalFaces(); i++) {
-        vec2f vertex1 = discard_Z(model.getVertex(i, 1));
-        vec2f vertex2 = discard_Z(model.getVertex(i, 2));
-        vec2f vertex3 = discard_Z(model.getVertex(i, 3));
+        for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
+            modelVerts[vertexIndex]   = model.getVertex(i, vertexIndex + 1);
+            modelVerts[vertexIndex].x = (modelVerts[vertexIndex].x + 1.0f)  * width  / 2;
+            modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f)  * height / 2;
+            modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
 
-        vertex1.x = (vertex1.x + 2.5f) * img.get_width() / 2;
-        vertex1.y = (vertex1.y + 1.0f) * img.get_height() / 2;
-        vertex2.x = (vertex2.x + 2.5f) * img.get_width() / 2;
-        vertex2.y = (vertex2.y + 1.0f) * img.get_height() / 2;
-        vertex3.x = (vertex3.x + 2.5f) * img.get_width() / 2;
-        vertex3.y = (vertex3.y + 1.0f) * img.get_height() / 2;
+            // TRANSFORMATIONS
+            float c = 1000;
+            Matrix mat = Matrix::Identity(4);
+            mat[0] = { 1, 0, 0, 0 };
+            mat[1] = { 0, 1, 0, 0 };
+            mat[2] = { 0, 0, 1, 0 };
+            mat[3] = { 0, 0, -1/c, 1 };
 
-        vec2i v1 { (int)vertex1.x, (int)vertex1.y };
-        vec2i v2 { (int)vertex2.x, (int)vertex2.y };
-        vec2i v3 { (int)vertex3.x, (int)vertex3.y };
+            Matrix hmgcoords = vecToMat(modelVerts[vertexIndex]);
+            modelVerts[vertexIndex] = matToVec3(
+                  translate(width / 2, height / 2, 0)
+                * mat
+                * zoom(0.6f)
+                * translate(-width / 2, -height / 2, 0)
+                * hmgcoords
+            );
+            // TRANSFORMATIONS
+        }
 
-        my_gl::line(v1, v2, img, line_color);
-        my_gl::line(v1, v3, img, line_color);
-        my_gl::line(v2, v3, img, line_color);
+        my_gl::line((vec3i)modelVerts[0], (vec3i)modelVerts[1], img, line_color);
+        my_gl::line((vec3i)modelVerts[1], (vec3i)modelVerts[2], img, line_color);
+        my_gl::line((vec3i)modelVerts[0], (vec3i)modelVerts[2], img, line_color);
     }
+    delete[] modelVerts;
 }
 
 void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDirection) {
@@ -140,7 +155,7 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
 
             // TRANSFORMATIONS
-            float c = 1500;
+            float c = 1000;
             Matrix mat = Matrix::Identity(4);
             mat[0] = { 1, 0, 0, 0 };
             mat[1] = { 0, 1, 0, 0 };
@@ -150,8 +165,8 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             Matrix hmgcoords = vecToMat(modelVerts[vertexIndex]);
             modelVerts[vertexIndex] = matToVec3(
                   translate(width / 2, height / 2, 0)
-                // * mat
-                // * zoom(0.6f)
+                * mat
+                * zoom(0.6f)
                 * translate(-width / 2, -height / 2, 0)
                 * hmgcoords
             );
