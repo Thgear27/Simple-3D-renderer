@@ -82,11 +82,11 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoord
     vec2f boxmin = vec2f { (float)outputImg.get_width(), (float)outputImg.get_height() };
     vec2f boxmax {};
     for (int i = 0; i < 3; i++) {
-        boxmin.x = std::max(0.0f, std::min(boxmin.x, verts_i[i].x));
-        boxmin.y = std::max(0.0f, std::min(boxmin.y, verts_i[i].y));
+        boxmin.x = std::max(0.0f, std::min(boxmin.x, verts[i].x));
+        boxmin.y = std::max(0.0f, std::min(boxmin.y, verts[i].y));
 
-        boxmax.x = std::min(img_width, std::max(boxmax.x, verts_i[i].x));
-        boxmax.y = std::min(img_height, std::max(boxmax.y, verts_i[i].y));
+        boxmax.x = std::min(img_width, std::max(boxmax.x, verts[i].x));
+        boxmax.y = std::min(img_height, std::max(boxmax.y, verts[i].y));
     }
 
     float vertex_z_value = 0;
@@ -131,7 +131,7 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
             modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
 
             // TRANSFORMATIONS
-            float c = 1000;
+            float c = 700;
             Matrix mat = Matrix::Identity(4);
             mat[0] = { 1, 0, 0, 0 };
             mat[1] = { 0, 1, 0, 0 };
@@ -195,19 +195,19 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             Matrix hmgcoords = vecToMat(modelVerts[vertexIndex]);
             modelVerts[vertexIndex] = matToVec3(
                   translate(width / 2, height / 2, 0)
-                // * mat
-                // * zoom(0.4f)
+                * mat
+                * zoom(0.6f)
                 * translate(-width / 2, -height / 2, 0)
                 * hmgcoords
             );
             // TRANSFORMATIONS
         }
 
-        vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
-        normal.normalize();
-        float intensity = dotProduct(lightDirection, normal);
+        // vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
+        // normal.normalize();
+        // float intensity = dotProduct(lightDirection, normal);
 
-        my_gl::triangle(modelVerts, img_zbuffer, textureImg, modelUvCoords, outputImg, modelVertsNormals, lightDirection, false);
+        my_gl::triangle(modelVerts, img_zbuffer, textureImg, modelUvCoords, outputImg, modelVertsNormals, lightDirection, true);
     }
     delete[] modelUvCoords;
     delete[] modelVerts;

@@ -28,15 +28,15 @@ const char* diablo3pose_texture_img  = "obj/diablo3_pose/diablo3_pose_diffuse.tg
 
 int main() {
     TGAImage img { width, height, TGAImage::Format::RGB };
-    Model modelo(boogie_body, Model::Format::with_vt);
-    Model modelo2(boogie_head, Model::Format::with_vt);
+    Model modelo(african_head, Model::Format::with_vt);
+    Model modelo2(ae_inner, Model::Format::with_vt);
 
     TGAImage textureImg {};
-    textureImg.read_tga_file(boogie_body_texture_img);
+    textureImg.read_tga_file(african_head_texture_img);
     textureImg.flip_vertically();
 
     TGAImage textureImg2 {};
-    textureImg2.read_tga_file(boogie_head_texture_img);
+    textureImg2.read_tga_file(ae_inner_texture_img);
     textureImg2.flip_vertically();
 
     float* zbuffer = new float[width * height];
@@ -45,8 +45,8 @@ int main() {
     }
 
     // my_gl::wireRender(modelo, color::white, img);
-    my_gl::simpleRender(modelo, textureImg, zbuffer, img, vec3f{0, 0, 1});
-    my_gl::simpleRender(modelo2, textureImg2, zbuffer, img, vec3f{0, 0, 1});
+    my_gl::simpleRender(modelo, textureImg, zbuffer, img, vec3f{-1, 0, 1});
+    my_gl::simpleRender(modelo2, textureImg2, zbuffer, img, vec3f{-1, 0, 1});
     std::cout << "Renderizacion hecha...\n";
 
     img.flip_vertically();
