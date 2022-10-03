@@ -71,6 +71,8 @@ float getFaceIntensity(vec3f* modelVerts, vec3f lightDirNormalized) {
 }
 
 void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg, vec3f* vec_normals, vec3f lightDir, bool smoothShadow) {
+    if (verts[0].y == verts[1].y && verts[0].y == verts[2].y) return;
+    if (verts[0].x == verts[1].x && verts[0].x == verts[2].x) return;
     vec3f verts_i[3] {};
     float img_width = outputImg.get_width();
     float img_height = outputImg.get_height();
@@ -185,7 +187,7 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
 
             // TRANSFORMATIONS
-            float c = 1000;
+            float c = 1400;
             Matrix mat = Matrix::Identity(4);
             mat[0] = { 1, 0, 0, 0 };
             mat[1] = { 0, 1, 0, 0 };
