@@ -81,7 +81,7 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoord
         verts_i[i] = (vec3i)verts[i];
     }
 
-    vec2f boxmin = vec2f { (float)outputImg.get_width(), (float)outputImg.get_height() };
+    vec2f boxmin = vec2f { img_width, img_height };
     vec2f boxmax {};
     for (int i = 0; i < 3; i++) {
         boxmin.x = std::max(0.0f, std::min(boxmin.x, verts[i].x));
@@ -159,8 +159,8 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
 }
 
 void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDirection) {
-    int width      = outputImg.get_width();
-    int height     = outputImg.get_height();
+    int width  = outputImg.get_width();
+    int height = outputImg.get_height();
 
     lightDirection.normalize();
 
