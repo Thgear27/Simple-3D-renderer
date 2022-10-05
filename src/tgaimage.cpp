@@ -347,27 +347,27 @@ bool TGAImage::unload_rle_data(std::ofstream& out) {
     return true;
 }
 
-TGAColor TGAImage::get(int x, int y) {
-    if (!m_data || x < 0 || y < 0 || x >= m_width || y >= m_height) {
-        return TGAColor();
-    }
-    return TGAColor(m_data + (x + y * m_width) * m_bytespp, m_bytespp);
-}
+// TGAColor TGAImage::get(int x, int y) {
+//     if (!m_data || x < 0 || y < 0 || x >= m_width || y >= m_height) {
+//         return TGAColor();
+//     }
+//     return TGAColor(m_data + (x + y * m_width) * m_bytespp, m_bytespp);
+// }
 
-bool TGAImage::set(int x, int y, const TGAColor& c) {
-    if (!m_data || x < 0 || y < 0 || x >= m_width || y >= m_height) {
-        // std::cout << "Out of bounds";
-        return false;
-    }
-    std::memcpy(m_data + (x + y * m_width) * m_bytespp, c.raw, m_bytespp);
-    return true;
-}
+// bool TGAImage::set(int x, int y, const TGAColor& c) {
+//     if (!m_data || x < 0 || y < 0 || x >= m_width || y >= m_height) {
+//         // std::cout << "Out of bounds";
+//         return false;
+//     }
+//     std::memcpy(m_data + (x + y * m_width) * m_bytespp, c.raw, m_bytespp);
+//     return true;
+// }
 
-int TGAImage::get_bytespp() { return m_bytespp; }
+// int TGAImage::get_bytespp() { return m_bytespp; }
 
-int TGAImage::get_width() { return m_width; }
+// int TGAImage::get_width() { return m_width; }
 
-int TGAImage::get_height() { return m_height; }
+// int TGAImage::get_height() { return m_height; }
 
 bool TGAImage::flip_horizontally() {
     if (!m_data) // True si m_data es nulo

@@ -96,12 +96,27 @@ public:
     bool flip_horizontally();
     bool flip_vertically();
     bool scale(int w, int h); // !Sinceramente no se lo que hace
-    TGAColor get(int x, int y);
-    bool set(int x, int y, const TGAColor& c);
+
+    inline TGAColor get(int x, int y) {
+        if (!m_data || x < 0 || y < 0 || x >= m_width || y >= m_height) {
+            return TGAColor();
+        }
+        return TGAColor(m_data + (x + y * m_width) * m_bytespp, m_bytespp);
+    }
+
+    inline bool set(int x, int y, const TGAColor& c) {
+        if (!m_data || x < 0 || y < 0 || x >= m_width || y >= m_height) {
+            // std::cout << "Out of bounds";
+            return false;
+        }
+        std::memcpy(m_data + (x + y * m_width) * m_bytespp, c.raw, m_bytespp);
+        return true;
+    }
+
     ~TGAImage();
-    int get_width();
-    int get_height();
-    int get_bytespp();
+    inline int get_width()   { return m_width; }
+    inline int get_height()  { return m_height; }
+    inline int get_bytespp() { return m_bytespp; }
 
     // Retornar data
     unsigned char* buffer();
