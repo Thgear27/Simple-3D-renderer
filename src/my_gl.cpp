@@ -100,8 +100,9 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoord
             TGAColor TxturePxlColor = getColorFromTexture(uvCoords, bcoord, textureImg);
             
             if (smoothShadow) {
+                float intensity = getSmoothIntensity(vec_normals, bcoord, lightDir);
                 for (int i = 0; i < 3; i++) {
-                    TxturePxlColor.raw[i] = getSmoothIntensity(vec_normals, bcoord, lightDir) * TxturePxlColor.raw[i];
+                    TxturePxlColor.raw[i] = intensity * TxturePxlColor.raw[i];
                 }
             } else {
                 float intensity = getFaceIntensity(verts, lightDir);
