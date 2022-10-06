@@ -122,5 +122,3 @@ const Matrix operator- (const Matrix& lhs, const Matrix& rhs) {
     }
     return result; 
 }
-
-    // friend const Matrix  operator-  (const Matrix& lhs, const Matrix& rhs);
