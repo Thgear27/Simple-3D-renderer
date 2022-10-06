@@ -8,11 +8,11 @@
 
 class Renderer {
 public:
-    Renderer(Model& model, TGAImage& context, TGAImage& texture);
+    Renderer(Model& model, TGAImage& context, const char* texture);
     ~Renderer();
 
     void render();
-    void reInitialize(Model& model, TGAImage& texture); 
+    void reInitialize(Model& model, const char* texture); 
     void doTransformation(Matrix mat);
     void generateImg(const char* filename);
 

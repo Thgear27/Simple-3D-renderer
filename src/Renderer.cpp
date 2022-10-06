@@ -1,14 +1,15 @@
 #include <limits>
 #include "Renderer.hpp"
 
-Renderer::Renderer(Model& model, TGAImage& context, TGAImage& texture) 
+Renderer::Renderer(Model& model, TGAImage& context, const char* texture) 
     : m_outputImg{ context }
 {
     int height     = m_outputImg.get_height();
     int width      = m_outputImg.get_width();
 
     m_model      = &model;
-    m_textureImg = texture;
+    m_textureImg.read_tga_file(texture);
+    m_textureImg.flip_vertically();
     m_zbuffer    = new float[height * width];
     m_lightDir   = vec3f{ 0, 0 ,1 };
 
@@ -25,9 +26,10 @@ void Renderer::render() {
     my_gl::simpleRender(*m_model, m_textureImg, m_zbuffer, m_outputImg, m_lightDir);
 }
 
-void Renderer::reInitialize(Model& model, TGAImage& texture) {
+void Renderer::reInitialize(Model& model, const char* texture) {
     m_model      = &model;
-    m_textureImg = texture;
+    m_textureImg.read_tga_file(texture);
+    m_textureImg.flip_vertically();
 }
 
 void Renderer::doTransformation(Matrix mat) {
