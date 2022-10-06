@@ -65,7 +65,6 @@ float getSmoothIntensity(vec3f* vec_normals, vec3f bcoord, vec3f lightDirection)
 float getFaceIntensity(vec3f* modelVerts, vec3f lightDirNormalized) {
     vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
     normal.normalize();
-    lightDirNormalized.normalize();
     float intensity = dotProduct(normal, lightDirNormalized);
     return (intensity < 0.0f) ?  0.0f : intensity;
 }
