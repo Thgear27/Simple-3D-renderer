@@ -39,6 +39,10 @@ private:
     int total_vn { 0 };
     int total_faces { 0 };
 
+    vec3f* v_ptr  { nullptr };
+    vec2f* vt_ptr { nullptr };
+    vec3f* vn_ptr { nullptr };
+
     std::vector<vec3f> vertices;
     std::vector<vec2f> vertices_textures;
     std::vector<vec3f> vertices_normals;

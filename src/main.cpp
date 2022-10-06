@@ -1,53 +1,31 @@
+#include "Renderer.hpp"
+#include "Timer.hpp"
 #include "model.hpp"
-#include "my_gl.hpp"
 #include "tgaimage.h"
-#include "matrix.hpp"
-#include <fstream>
+#include "objpaths.hpp"
 #include <iostream>
 
 constexpr int height { 1000 };
 constexpr int width  { 1000 };
 
-const char* african_head             = "obj/african_head/african_head.obj";
-const char* african_head_texture_img = "obj/african_head/african_head_diffuse.tga";
-
-const char* ae_inner                 = "obj/african_head/african_head_eye_inner.obj";
-const char* ae_inner_texture_img     = "obj/african_head/african_head_eye_inner_diffuse.tga";
-
-const char* ae_outer                 = "obj/african_head/african_head_eye_outer.obj";
-const char* ae_outer_texture_img     = "obj/african_head/african_head_eye_outer_diffuse.tga";
-
-const char* boogie_head              = "obj/boggie/head.obj";
-const char* boogie_head_texture_img  = "obj/boggie/head_diffuse.tga";
-
-const char* boogie_body              = "obj/boggie/body.obj";
-const char* boogie_body_texture_img  = "obj/boggie/body_diffuse.tga";
-
-const char* diablo3pose              = "obj/diablo3_pose/diablo3_pose.obj";
-const char* diablo3pose_texture_img  = "obj/diablo3_pose/diablo3_pose_diffuse.tga";
-
-const char* cubePortal               = "obj/cubePortal/cube.obj";
-const char* cubePortalTexture_img    = "obj/cubePortal/metal_box_skin001.tga";
-
 int main() {
     TGAImage img { width, height, TGAImage::Format::RGB };
-    Model modelo(diablo3pose, Model::Format::with_vt);
+    Model modelo(african_head, Model::Format::with_vt);
 
-    TGAImage textureImg {};
-    textureImg.read_tga_file("obj/rabbit/outTexture.tga");
-    textureImg.flip_vertically();
+    Renderer renderer(modelo, img, "obj/rabbit/outTexture.tga");
+    renderer.setLightDirection(vec3f {-1, 0, 1});
 
-    float* zbuffer = new float[width * height];
-    for (int i = 0; i < width * height; i++) {
-        zbuffer[i] = -std::numeric_limits<float>::max();
-    }
+    Timer time;
+    time.reset();
 
-    // my_gl::wireRender(modelo, color::white, img);
-    my_gl::simpleRender(modelo, textureImg, zbuffer, img, vec3f{0, 1, 0.3f});
+    renderer.render();
+    
+    double elaps = time.elapsed();
+    std::cout << elaps << '\n';
     std::cout << "Renderizacion hecha...\n";
 
-    img.flip_vertically();
-    img.write_tga_file("test7.tga");
+    renderer.generateImg("test2.tga");
+
     std::cout << "done..." << '\n';
     return 0;
 }

@@ -4,9 +4,32 @@
 #include <sstream>
 #include <string>
 
-Model::Model(const char* filename, Format l_format) : format(l_format) { load_model_from_file(filename); }
+Model::Model(const char* filename, Format l_format) 
+    : format(l_format) 
+{
+    if (load_model_from_file(filename)) {
+        v_ptr  = new vec3f[total_faces * 3];
+        vt_ptr = new vec2f[total_faces * 3];
+        vn_ptr = new vec3f[total_faces * 3];
+        for (int face_i = 0; face_i < total_faces; face_i++) {
+            for (int i = 0; i < 3; i++) {
+                v_ptr[3 * face_i + i] = getVertex(face_i, i + 1);
+            }
+            for (int i = 0; i < 3; i++) {
+                vt_ptr[3 * face_i + i] = getVertexTexture(face_i, i + 1);
+            }
+            for (int i = 0; i < 3; i++) {
+                vn_ptr[3 * face_i + i] = getVertexNormal(face_i, i + 1);
+            }
+        }
+    }
+}
 
-Model::~Model() {}
+Model::~Model() {
+    delete[] v_ptr;
+    delete[] vt_ptr;
+    delete[] vn_ptr;
+}
 
 bool Model::load_model_from_file(const char* filename) {
     std::ifstream model_file(filename);
@@ -98,22 +121,13 @@ bool Model::load_model_from_file(const char* filename) {
 }
 
 vec3f& Model::getVertex(int face_index, int which_vertex) {
-    if (!(which_vertex <= 3 && which_vertex >= 1))
-        std::cout << "parametro wich_vertex tiene que ser de 1 a 3\n";
-    assert(which_vertex <= 3 && which_vertex >= 1);
     return vertices[faces[face_index].v_idx[which_vertex - 1]];
 }
 
 vec3f& Model::getVertexNormal(int face_index, int which_vertex) {
-    if (!(which_vertex <= 3 && which_vertex >= 1))
-        std::cout << "parametro wich_vertex tiene que ser de 1 a 3\n";
-    assert(which_vertex <= 3 && which_vertex >= 1);
     return vertices_normals[faces[face_index].vn_idx[which_vertex - 1]];
 }
 
 vec2f& Model::getVertexTexture(int face_index, int which_vertex) {
-    if (!(which_vertex <= 3 && which_vertex >= 1))
-        std::cout << "parametro wich_vertex tiene que ser de 1 a 3\n";
-    assert(which_vertex <= 3 && which_vertex >= 1);
     return vertices_textures[faces[face_index].vt_idx[which_vertex - 1]];
 }
