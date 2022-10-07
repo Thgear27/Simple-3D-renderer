@@ -10,10 +10,13 @@ constexpr int width  { 1000 };
 
 int main() {
     TGAImage img { width, height, TGAImage::Format::RGB };
-    Model modelo(diablo3pose, Model::Format::with_vt);
+    Model modelo(african_head, Model::Format::with_vt);
 
     Renderer renderer(modelo, img, "obj/rabbit/outTexture.tga");
     renderer.setLightDirection(vec3f {-1, 0, 1});
+    renderer.setViewport();
+    renderer.doTransformation(my_gl::simpleProjection(1000), width / 2, height / 2);
+    renderer.doTransformation(my_gl::zoom(0.4f), width / 2, height / 2);
 
     Timer time;
     time.reset();
@@ -29,9 +32,3 @@ int main() {
     std::cout << "done..." << '\n';
     return 0;
 }
-
-// TODO:
-/**
- * Refactorizar el código
- * hacer que el zbuffer se comparta para dos modelos que conforman uno solo
- */
