@@ -157,11 +157,6 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
 
         modelVecNormals = model.getVertexNormal_ptr(i);
         modelVecs        = model.getVertex_ptr(i);
-        for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
-            modelVecs[vertexIndex].x = (modelVecs[vertexIndex].x + 1.0f)  * width  / 2;
-            modelVecs[vertexIndex].y = (modelVecs[vertexIndex].y + 1.0f)  * height / 2;
-            modelVecs[vertexIndex].z = (modelVecs[vertexIndex].z + 1.0f)  * height / 2;
-        }
 
         my_gl::triangle(modelVecs, img_zbuffer, textureImg, modelVtCoords, outputImg, modelVecNormals, lightDir, true);
     }
@@ -196,6 +191,12 @@ Matrix shear(float x, float y) {
     Matrix mat = Matrix::Identity(4);
     mat[0][1] = x;
     mat[1][0] = y;
+    return mat;
+}
+
+Matrix simpleProjection(int zDistance) {
+    Matrix mat = Matrix::Identity(4);
+    mat[3][2] = -1/(float)zDistance;
     return mat;
 }
 

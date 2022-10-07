@@ -13,8 +13,11 @@ public:
 
     void render();
     void reInitialize(Model& model, const char* texture); 
-    void doTransformation(Matrix mat);
+    void doTransformation(const Matrix& mat, int x, int y);
     void generateImg(const char* filename);
+    
+    // It'll change (the definition)
+    void setViewport();
 
     void setOutputImg(const TGAImage& img); 
     void setTextureImg(const TGAImage& img);
@@ -27,6 +30,8 @@ private:
     float*    m_zbuffer;
     vec3f     m_lightDir;
     Model*    m_model;
+    int m_height;
+    int m_width;
 };
 
 #endif // RENDERER_H

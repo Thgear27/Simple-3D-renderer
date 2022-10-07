@@ -26,6 +26,7 @@ Matrix zoom(float factor);
 Matrix translate(int x, int y, int z);
 Matrix rotate(float angle);
 Matrix shear(float x, float y);
+Matrix simpleProjection(int zDistance);
 
 } // namespace my_gl
 
