@@ -126,29 +126,12 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
 
     vec3f* modelVerts    = new vec3f[3] {};
     for (int i = 0; i < model.getTotalFaces(); i++) {
+        modelVerts = model.getVertex_ptr(i);
+
         for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
-            modelVerts[vertexIndex]   = model.getVertex(i, vertexIndex + 1);
             modelVerts[vertexIndex].x = (modelVerts[vertexIndex].x + 1.0f)  * width  / 2;
             modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f)  * height / 2;
             modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
-
-            // TRANSFORMATIONS
-            float c = 700;
-            Matrix mat = Matrix::Identity(4);
-            mat[0] = { 1, 0, 0, 0 };
-            mat[1] = { 0, 1, 0, 0 };
-            mat[2] = { 0, 0, 1, 0 };
-            mat[3] = { 0, 0, -1/c, 1 };
-
-            Matrix hmgcoords = vecToMat(modelVerts[vertexIndex]);
-            modelVerts[vertexIndex] = matToVec3(
-                  translate(width / 2, height / 2, 0)
-                * mat
-                * zoom(0.6f)
-                * translate(-width / 2, -height / 2, 0)
-                * hmgcoords
-            );
-            // TRANSFORMATIONS
         }
 
         my_gl::line((vec3i)modelVerts[0], (vec3i)modelVerts[1], img, line_color);
@@ -158,62 +141,30 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     delete[] modelVerts;
 }
 
-void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDirection) {
+void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir) {
     int width  = outputImg.get_width();
     int height = outputImg.get_height();
 
-    lightDirection.normalize();
+    lightDir.normalize();
 
-    vec2f* modelUvCoords     = new vec2f[3] { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f } };
-    vec3f* modelVerts        = new vec3f[3] {};
-    vec3f* modelVertsNormals = new vec3f[3] {};
+    vec2f* modelVtCoords   = new vec2f[3] { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f } };
+    vec3f* modelVecs       = new vec3f[3] {};
+    vec3f* modelVecNormals = new vec3f[3] {};
+
     for (int i = 0; i < model.getTotalFaces(); i++) {
-        
-        // Carga las vertex textures
-        for (int coordIndex = 0; coordIndex < 3; coordIndex++) {
-            if (model.getFormat() == Model::Format::with_vt)
-                modelUvCoords[coordIndex] = model.getVertexTexture(i, coordIndex + 1);
-        }
+        if (model.getFormat() == Model::Format::with_vt)
+            modelVtCoords = model.getVertexTexture_ptr(i);
 
-        // Carga las vertext Normals
-        for (int coordIndex = 0; coordIndex < 3; coordIndex++) {
-            modelVertsNormals[coordIndex] = model.getVertexNormal(i, coordIndex + 1);
-        }
-
+        modelVecNormals = model.getVertexNormal_ptr(i);
+        modelVecs        = model.getVertex_ptr(i);
         for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
-            modelVerts[vertexIndex]   = model.getVertex(i, vertexIndex + 1);
-            modelVerts[vertexIndex].x = (modelVerts[vertexIndex].x + 1.0f)  * width  / 2;
-            modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f)  * height / 2;
-            modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
-
-            // TRANSFORMATIONS
-            float c = 1400;
-            Matrix mat = Matrix::Identity(4);
-            mat[0] = { 1, 0, 0, 0 };
-            mat[1] = { 0, 1, 0, 0 };
-            mat[2] = { 0, 0, 1, 0 };
-            mat[3] = { 0, 0, -1/c, 1 };
-
-            Matrix hmgcoords = vecToMat(modelVerts[vertexIndex]);
-            modelVerts[vertexIndex] = matToVec3(
-                  translate(width / 2, height / 2, 0)
-                * mat
-                * zoom(0.6f)
-                * translate(-width / 2, -height / 2, 0)
-                * hmgcoords
-            );
-            // TRANSFORMATIONS
+            modelVecs[vertexIndex].x = (modelVecs[vertexIndex].x + 1.0f)  * width  / 2;
+            modelVecs[vertexIndex].y = (modelVecs[vertexIndex].y + 1.0f)  * height / 2;
+            modelVecs[vertexIndex].z = (modelVecs[vertexIndex].z + 1.0f)  * height / 2;
         }
 
-        // vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
-        // normal.normalize();
-        // float intensity = dotProduct(lightDirection, normal);
-
-        my_gl::triangle(modelVerts, img_zbuffer, textureImg, modelUvCoords, outputImg, modelVertsNormals, lightDirection, true);
+        my_gl::triangle(modelVecs, img_zbuffer, textureImg, modelVtCoords, outputImg, modelVecNormals, lightDir, true);
     }
-    delete[] modelUvCoords;
-    delete[] modelVerts;
-    delete[] modelVertsNormals;
 }
 
 Matrix zoom(float factor) {

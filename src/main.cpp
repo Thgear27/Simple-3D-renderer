@@ -10,7 +10,7 @@ constexpr int width  { 1000 };
 
 int main() {
     TGAImage img { width, height, TGAImage::Format::RGB };
-    Model modelo(african_head, Model::Format::with_vt);
+    Model modelo(diablo3pose, Model::Format::with_vt);
 
     Renderer renderer(modelo, img, "obj/rabbit/outTexture.tga");
     renderer.setLightDirection(vec3f {-1, 0, 1});
