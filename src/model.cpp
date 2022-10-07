@@ -22,7 +22,7 @@ Model::Model(const char* filename, Format l_format)
                 vn_ptr[3 * face_i + i] = getVertexNormal(face_i, i + 1);
             }
         }
-    }
+    } 
 }
 
 Model::~Model() {
@@ -130,4 +130,15 @@ vec3f& Model::getVertexNormal(int face_index, int which_vertex) {
 
 vec2f& Model::getVertexTexture(int face_index, int which_vertex) {
     return vertices_textures[faces[face_index].vt_idx[which_vertex - 1]];
+}
+
+// For performance reasons
+vec3f* Model::getVertex_ptr(int face_index) {
+    return v_ptr + (face_index * 3);
+}
+vec3f* Model::getVertexNormal_ptr(int face_index) {
+    return vn_ptr  + (face_index * 3);
+}
+vec2f* Model::getVertexTexture_ptr(int face_index) {
+    return vt_ptr  + (face_index * 3);
 }
