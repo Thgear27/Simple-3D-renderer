@@ -178,7 +178,25 @@ Matrix translate(int x, int y, int z) {
     return mat;
 }
 
-Matrix rotate(float angle) {
+Matrix rotatex(float angle) {
+    Matrix mat = Matrix::Identity(4);
+    mat[1][1] = std::cos(angle);
+    mat[1][2] = -std::sin(angle);
+    mat[2][1] = std::sin(angle);
+    mat[2][2] = std::cos(angle);
+    return mat;
+}
+
+Matrix rotatey(float angle) {
+    Matrix mat = Matrix::Identity(4);
+    mat[0][0] = std::cos(angle);
+    mat[0][2] = std::sin(angle);
+    mat[2][0] = -std::sin(angle);
+    mat[2][2] = std::cos(angle);
+    return mat;
+}
+
+Matrix rotatez(float angle) {
     Matrix mat = Matrix::Identity(4);
     mat[0][0] = std::cos(angle);
     mat[0][1] = -std::sin(angle);
@@ -186,6 +204,7 @@ Matrix rotate(float angle) {
     mat[1][1] = std::cos(angle);
     return mat;
 }
+
 
 Matrix shear(float x, float y) {
     Matrix mat = Matrix::Identity(4);

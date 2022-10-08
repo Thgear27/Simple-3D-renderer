@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include <vector>
+#include <string>
 #include "model.hpp"
 #include "my_gl.hpp"
 #include "math.hpp"
@@ -14,7 +15,8 @@ public:
     void render();
     void reInitialize(Model& model, const char* texture); 
     void doTransformation(const Matrix& mat, int x, int y);
-    void generateImg(const char* filename);
+    void generateImg(const std::string& filename);
+    void clearImg();
     
     // It'll change (the definition)
     void setViewport();

@@ -56,14 +56,22 @@ void Renderer::setViewport() {
         for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
             modelVecs[vertexIndex].x = (modelVecs[vertexIndex].x + 1.0f)  * m_width  / 2;
             modelVecs[vertexIndex].y = (modelVecs[vertexIndex].y + 1.0f)  * m_height / 2;
-            modelVecs[vertexIndex].z = (modelVecs[vertexIndex].z + 1.0f)  * 255;
+            modelVecs[vertexIndex].z = (modelVecs[vertexIndex].z + 1.0f)  * m_height / 2;
         }
     }
 }
 
-void Renderer::generateImg(const char* filename) {
+void Renderer::generateImg(const std::string& filename) {
     m_outputImg.flip_vertically();
-    m_outputImg.write_tga_file(filename);
+    const char* cfilename = filename.c_str();
+    m_outputImg.write_tga_file(cfilename);
+}
+
+void Renderer::clearImg() {
+    m_outputImg.clear(); 
+    for (int i = 0; i < m_height * m_width; i++) {
+        m_zbuffer[i] = -std::numeric_limits<float>::max();
+    }
 }
 
 void Renderer::setOutputImg(const TGAImage& img) {
