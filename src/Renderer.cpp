@@ -22,8 +22,8 @@ Renderer::Renderer(Model& model, TGAImage& context, const char* texture)
 
 Renderer::~Renderer() { delete[] m_zbuffer; }
 
-void Renderer::render() {
-    my_gl::simpleRender(*m_model, m_textureImg, m_zbuffer, m_outputImg, m_lightDir);
+void Renderer::render(int z_proyectionDistance) {
+    my_gl::simpleRender(*m_model, m_textureImg, m_zbuffer, m_outputImg, m_lightDir, z_proyectionDistance);
 }
 
 void Renderer::reInitialize(Model& model, const char* texture) {

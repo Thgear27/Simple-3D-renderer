@@ -141,25 +141,34 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     delete[] modelVerts;
 }
 
-void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir) {
+void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, int z_distance) {
     int width  = outputImg.get_width();
     int height = outputImg.get_height();
 
     lightDir.normalize();
 
-    vec2f* modelVtCoords   = new vec2f[3] { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f } };
-    vec3f* modelVecs       = new vec3f[3] {};
-    vec3f* modelVecNormals = new vec3f[3] {};
+    vec2f* modelVtCoords    = new vec2f[3] { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f }};
+    vec3f* modelVecs        = new vec3f[3] {};
+    vec3f* modelVecNormals;
 
     for (int i = 0; i < model.getTotalFaces(); i++) {
         if (model.getFormat() == Model::Format::with_vt)
             modelVtCoords = model.getVertexTexture_ptr(i);
 
         modelVecNormals = model.getVertexNormal_ptr(i);
-        modelVecs        = model.getVertex_ptr(i);
+
+        for (int vi = 0; vi < 3; vi++) {
+            modelVecs[vi] = matToVec3 (
+                  translate(width / 2, height / 2, 0)
+                * simpleProjection(z_distance)
+                * translate(-width / 2, -height / 2, 0)
+                * vecToMat(model.getVertex_ptr(i)[vi])
+            );
+        }
 
         my_gl::triangle(modelVecs, img_zbuffer, textureImg, modelVtCoords, outputImg, modelVecNormals, lightDir, true);
     }
+    delete[] modelVecs;
 }
 
 Matrix zoom(float factor) {

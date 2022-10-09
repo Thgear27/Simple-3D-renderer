@@ -12,7 +12,7 @@ public:
     Renderer(Model& model, TGAImage& context, const char* texture);
     ~Renderer();
 
-    void render();
+    void render(int z_proyectionDistance);
     void reInitialize(Model& model, const char* texture); 
     void doTransformation(const Matrix& mat,const vec3f& point);
     void generateImg(const std::string& filename);
