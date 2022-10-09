@@ -142,3 +142,13 @@ vec3f* Model::getVertexNormal_ptr(int face_index) {
 vec2f* Model::getVertexTexture_ptr(int face_index) {
     return vt_ptr  + (face_index * 3);
 }
+
+vec3f Model::getModelCenter() {
+    vec3f center { 0, 0, 0 };
+    for (int i = 0; i < total_faces; i++) {
+        for (int j = 0; j < 3; j++) {
+            center = center + getVertex_ptr(i)[j];
+        }
+    }
+    return center / (float)(total_faces * 3);
+}

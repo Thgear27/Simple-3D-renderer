@@ -26,7 +26,7 @@ public:
     bool load_model_from_file(const char* filename);
 
     // Member functions added
-
+    vec3f getModelCenter();
 
     vec3f* getVertex_ptr(int face_index);
     vec3f* getVertexNormal_ptr(int face_index);
