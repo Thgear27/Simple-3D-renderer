@@ -14,7 +14,7 @@ public:
 
     void render();
     void reInitialize(Model& model, const char* texture); 
-    void doTransformation(const Matrix& mat, int x, int y);
+    void doTransformation(const Matrix& mat,const vec3f& point);
     void generateImg(const std::string& filename);
     void clearImg();
     

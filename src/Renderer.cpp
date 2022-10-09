@@ -32,7 +32,7 @@ void Renderer::reInitialize(Model& model, const char* texture) {
     m_textureImg.flip_vertically();
 }
 
-void Renderer::doTransformation(const Matrix& mat, int x, int y) {
+void Renderer::doTransformation(const Matrix& mat,const vec3f& point) {
     vec3f* modelVecs = new vec3f[3] {};
     for (int i = 0; i < m_model->getTotalFaces(); i++) {
         modelVecs = m_model->getVertex_ptr(i);
@@ -40,9 +40,9 @@ void Renderer::doTransformation(const Matrix& mat, int x, int y) {
         for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
             Matrix hmcoords = vecToMat(modelVecs[vertexIndex]);
             modelVecs[vertexIndex] = matToVec3(
-                  my_gl::translate(x, y, 0)
+                  my_gl::translate(point.x, point.y, point.z)
                 * mat
-                * my_gl::translate(-x, -y, 0)
+                * my_gl::translate(-point.x, -point.y, -point.z)
                 * hmcoords
             );
         }
