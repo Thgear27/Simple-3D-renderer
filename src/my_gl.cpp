@@ -124,7 +124,7 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     int width  = img.get_width();
     int height = img.get_height();
 
-    vec3f* modelVerts    = new vec3f[3] {};
+    vec3f* modelVerts;
     for (int i = 0; i < model.getTotalFaces(); i++) {
         modelVerts = model.getVertex_ptr(i);
 
@@ -138,7 +138,6 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
         my_gl::line((vec3i)modelVerts[1], (vec3i)modelVerts[2], img, line_color);
         my_gl::line((vec3i)modelVerts[0], (vec3i)modelVerts[2], img, line_color);
     }
-    delete[] modelVerts;
 }
 
 void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, int z_distance) {
@@ -146,11 +145,11 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
     int height = outputImg.get_height();
 
     lightDir.normalize();
-
-    vec2f* modelVtCoords    = new vec2f[3] { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f }};
-    vec3f* modelVecs        = new vec3f[3] {};
+    vec2f mvc[3] = { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f }};
+    vec2f* modelVtCoords; 
+    vec3f* modelVecs = new vec3f[3] {};
     vec3f* modelVecNormals;
-
+    if (model.getFormat() == Model::Format::no_vt) modelVtCoords = mvc;
     for (int i = 0; i < model.getTotalFaces(); i++) {
         if (model.getFormat() == Model::Format::with_vt)
             modelVtCoords = model.getVertexTexture_ptr(i);

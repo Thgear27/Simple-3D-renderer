@@ -33,7 +33,7 @@ void Renderer::reInitialize(Model& model, const char* texture) {
 }
 
 void Renderer::doTransformation(const Matrix& mat,const vec3f& point) {
-    vec3f* modelVecs = new vec3f[3] {};
+    vec3f* modelVecs;
     for (int i = 0; i < m_model->getTotalFaces(); i++) {
         modelVecs = m_model->getVertex_ptr(i);
 
@@ -50,7 +50,7 @@ void Renderer::doTransformation(const Matrix& mat,const vec3f& point) {
 }
 
 void Renderer::setViewport() {
-    vec3f* modelVecs = new vec3f[3] {};
+    vec3f* modelVecs;
     for (int i = 0; i < m_model->getTotalFaces(); i++) {
         modelVecs = m_model->getVertex_ptr(i);
         for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
