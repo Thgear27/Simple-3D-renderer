@@ -9,7 +9,7 @@
 
 class Renderer {
 public:
-    Renderer(Model& model, TGAImage& context, const char* texture);
+    Renderer(Model& model, TGAImage& context);
     ~Renderer();
 
     void render(int z_proyectionDistance);
@@ -22,13 +22,11 @@ public:
     void setViewport();
 
     void setOutputImg(const TGAImage& img); 
-    void setTextureImg(const TGAImage& img);
     void setLightDirection(const vec3f& light_dir);
     void setModel(Model& model);
 
 private:
     TGAImage& m_outputImg;
-    TGAImage  m_textureImg;
     float*    m_zbuffer;
     vec3f     m_lightDir;
     Model*    m_model;

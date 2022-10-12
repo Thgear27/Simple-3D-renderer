@@ -140,7 +140,7 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     }
 }
 
-void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, int z_distance) {
+void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, int z_distance) {
     int width  = outputImg.get_width();
     int height = outputImg.get_height();
 
@@ -165,7 +165,7 @@ void simpleRender(Model& model, TGAImage& textureImg, float* img_zbuffer ,TGAIma
             );
         }
 
-        my_gl::triangle(modelVecs, img_zbuffer, textureImg, modelVtCoords, outputImg, modelVecNormals, lightDir, true);
+        my_gl::triangle(modelVecs, img_zbuffer, model.getTextureImg(), modelVtCoords, outputImg, modelVecNormals, lightDir, true);
     }
     delete[] modelVecs;
 }

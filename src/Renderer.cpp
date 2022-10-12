@@ -1,15 +1,13 @@
 #include <limits>
 #include "Renderer.hpp"
 
-Renderer::Renderer(Model& model, TGAImage& context, const char* texture) 
+Renderer::Renderer(Model& model, TGAImage& context) 
     : m_outputImg{ context }
 {
     m_height     = m_outputImg.get_height();
     m_width      = m_outputImg.get_width();
 
     m_model      = &model;
-    m_textureImg.read_tga_file(texture);
-    m_textureImg.flip_vertically();
     m_zbuffer    = new float[m_height * m_width];
     m_lightDir   = vec3f{ 0, 0 ,1 };
 
@@ -23,13 +21,11 @@ Renderer::Renderer(Model& model, TGAImage& context, const char* texture)
 Renderer::~Renderer() { delete[] m_zbuffer; }
 
 void Renderer::render(int z_proyectionDistance) {
-    my_gl::simpleRender(*m_model, m_textureImg, m_zbuffer, m_outputImg, m_lightDir, z_proyectionDistance);
+    my_gl::simpleRender(*m_model, m_zbuffer, m_outputImg, m_lightDir, z_proyectionDistance);
 }
 
 void Renderer::reInitialize(Model& model, const char* texture) {
-    m_model      = &model;
-    m_textureImg.read_tga_file(texture);
-    m_textureImg.flip_vertically();
+    m_model = &model;
 }
 
 void Renderer::doTransformation(const Matrix& mat,const vec3f& point) {
@@ -76,9 +72,6 @@ void Renderer::clearImg() {
 
 void Renderer::setOutputImg(const TGAImage& img) {
     m_outputImg = img; 
-}
-void Renderer::setTextureImg(const TGAImage& img) {
-    m_textureImg = img;
 }
 void Renderer::setLightDirection(const vec3f& light_dir) {
     m_lightDir = light_dir;

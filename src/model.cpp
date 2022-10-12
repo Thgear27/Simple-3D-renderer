@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-Model::Model(const char* filename, Format l_format) 
+Model::Model(const char* filename, Format l_format, const char* textureImgFile) 
     : format(l_format) 
 {
     if (load_model_from_file(filename)) {
@@ -23,12 +23,18 @@ Model::Model(const char* filename, Format l_format)
             }
         }
     } 
+    m_textureImg.read_tga_file(textureImgFile);
+    m_textureImg.flip_vertically();
 }
 
 Model::~Model() {
     delete[] v_ptr;
     delete[] vt_ptr;
     delete[] vn_ptr;
+}
+
+TGAImage& Model::getTextureImg() {
+    return m_textureImg;
 }
 
 bool Model::load_model_from_file(const char* filename) {

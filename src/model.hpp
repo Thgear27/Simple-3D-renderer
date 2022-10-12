@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include "math.hpp"
+#include "tgaimage.h"
 #include <vector>
 
 struct face {
@@ -14,7 +15,7 @@ class Model {
 public:
     enum Format { no_vt, with_vt };
 
-    Model(const char* filename, Format l_format);
+    Model(const char* filename, Format l_format, const char* textureImgFile);
     ~Model();
 
     int getTotalFaces() { return total_faces; }
@@ -32,6 +33,7 @@ public:
     vec3f* getVertexNormal_ptr(int face_index);
     vec2f* getVertexTexture_ptr(int face_index);
 
+    TGAImage& getTextureImg();
 private:
     Format format;
 
@@ -52,6 +54,8 @@ private:
     std::vector<vec2f> vertices_textures;
     std::vector<vec3f> vertices_normals;
     std::vector<face> faces;
+
+    TGAImage m_textureImg;
 };
 
 #endif // MODEL_H
