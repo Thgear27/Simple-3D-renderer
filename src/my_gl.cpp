@@ -226,4 +226,31 @@ Matrix simpleProjection(int zDistance) {
     return mat;
 }
 
+Matrix lookAt(const vec3f& from, const vec3f& to, const vec3f& up) {
+    vec3f foward = (from - to);      foward.normalize();
+    vec3f right = crossProduct(up, foward); right.normalize();
+    vec3f newup = crossProduct(foward, right);  newup.normalize();
+    Matrix minv = Matrix::Identity(4);
+    Matrix traslation = Matrix::Identity(4);
+    minv[0] = { right.x,  right.y,  right.z,  0 };
+    minv[1] = { newup.x,  newup.y,  newup.z,  0 };
+    minv[2] = { foward.x, foward.y, foward.z, 0 };
+    traslation[0][3] = -from.x;
+    traslation[1][3] = -from.y;
+    traslation[2][3] = -from.z;
+    return minv * traslation;
+}
+
+Matrix viewport(int x, int y, int w, int h, int depth) {
+    Matrix viewport = Matrix::Identity(4);
+    viewport[0][3] = x + w / 2.0f;
+    viewport[1][3] = y + h / 2.0f;
+    viewport[2][3] = depth / 2.0f;
+
+    viewport[0][0] = w / 2.0f;
+    viewport[1][1] = h / 2.0f;
+    viewport[2][2] = depth / 2.0f;
+    return viewport;
+}
+
 } // namespace my_gl

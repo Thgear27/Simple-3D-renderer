@@ -21,7 +21,7 @@ public:
     // It'll change (the definition)
     void setViewport(int x, int y, int w, int h);
     void setProyection(int z_distance);
-    void lookAt(vec3f eye, vec3f center, vec3f up);
+    void setCamera(const vec3f& from, const vec3f& to, const vec3f& up);
 
     void setOutputImg(const TGAImage& img); 
     void setLightDirection(const vec3f& light_dir);

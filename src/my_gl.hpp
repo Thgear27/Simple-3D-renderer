@@ -22,6 +22,9 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img);
 void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, Matrix vpm);
 TGAColor getColorFromTexture (vec2f* uvCoords, vec3f baryCoords, TGAImage& textureImg);
 
+Matrix lookAt(const vec3f& from, const vec3f& to, const vec3f& up);
+Matrix viewport(int x, int y, int w, int h, int depth);
+
 Matrix zoom(float factor);
 Matrix translate(int x, int y, int z);
 Matrix rotatex(float angle);

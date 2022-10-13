@@ -59,31 +59,13 @@ void Renderer::clearImg() {
 }
 
 void Renderer::setViewport(int x, int y, int w, int h) {
-    viewport = Matrix::Identity(4);
-    viewport[0][3] = x + w / 2.0f;
-    viewport[1][3] = y + h / 2.0f;
-    viewport[2][3] = m_depth / 2.0f;
-
-    viewport[0][0] = w / 2.0f;
-    viewport[1][1] = h / 2.0f;
-    viewport[2][2] = m_depth / 2.0f;
+    viewport = my_gl::viewport(x, y, w, h, m_depth);
 }
 void Renderer::setProyection(int z_distance) {
     proyection = my_gl::simpleProjection(z_distance);
 }
-void Renderer::lookAt(vec3f from, vec3f to, vec3f up) {
-    vec3f foward = (from - to);      foward.normalize();
-    vec3f right = crossProduct(up, foward); right.normalize();
-    vec3f newup = crossProduct(foward, right);  newup.normalize();
-    Matrix minv = Matrix::Identity(4);
-    Matrix traslation = Matrix::Identity(4);
-    minv[0] = { right.x,  right.y,  right.z,  0 };
-    minv[1] = { newup.x,  newup.y,  newup.z,  0 };
-    minv[2] = { foward.x, foward.y, foward.z, 0 };
-    traslation[0][3] = -from.x;
-    traslation[1][3] = -from.y;
-    traslation[2][3] = -from.z;
-    modelView = minv * traslation;
+void Renderer::setCamera(const vec3f& from, const vec3f& to, const vec3f& up) {
+    modelView = my_gl::lookAt(from, to, up);
 }
 
 void Renderer::setOutputImg(const TGAImage& img) {
