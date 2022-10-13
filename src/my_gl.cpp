@@ -124,30 +124,30 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
     int width  = img.get_width();
     int height = img.get_height();
 
-    vec3f* modelVerts;
+    vec3f* screen_coords;
     for (int i = 0; i < model.getTotalFaces(); i++) {
-        modelVerts = model.getVertex_ptr(i);
+        screen_coords = model.getVertex_ptr(i);
 
         for (int vertexIndex = 0; vertexIndex < 3; vertexIndex++) {
-            modelVerts[vertexIndex].x = (modelVerts[vertexIndex].x + 1.0f)  * width  / 2;
-            modelVerts[vertexIndex].y = (modelVerts[vertexIndex].y + 1.0f)  * height / 2;
-            modelVerts[vertexIndex].z = (modelVerts[vertexIndex].z + 1.0f)  * height / 2;
+            screen_coords[vertexIndex].x = (screen_coords[vertexIndex].x + 1.0f)  * width  / 2;
+            screen_coords[vertexIndex].y = (screen_coords[vertexIndex].y + 1.0f)  * height / 2;
+            screen_coords[vertexIndex].z = (screen_coords[vertexIndex].z + 1.0f)  * height / 2;
         }
 
-        my_gl::line((vec3i)modelVerts[0], (vec3i)modelVerts[1], img, line_color);
-        my_gl::line((vec3i)modelVerts[1], (vec3i)modelVerts[2], img, line_color);
-        my_gl::line((vec3i)modelVerts[0], (vec3i)modelVerts[2], img, line_color);
+        my_gl::line((vec3i)screen_coords[0], (vec3i)screen_coords[1], img, line_color);
+        my_gl::line((vec3i)screen_coords[1], (vec3i)screen_coords[2], img, line_color);
+        my_gl::line((vec3i)screen_coords[0], (vec3i)screen_coords[2], img, line_color);
     }
 }
 
-void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, int z_distance) {
+void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, Matrix vpm) {
     int width  = outputImg.get_width();
     int height = outputImg.get_height();
 
     lightDir.normalize();
     vec2f mvc[3] = { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f }};
     vec2f* modelVtCoords; 
-    vec3f* modelVecs = new vec3f[3] {};
+    vec3f* screen_coords = new vec3f[3] {};
     vec3f* modelVecNormals;
     if (model.getFormat() == Model::Format::no_vt) modelVtCoords = mvc;
     for (int i = 0; i < model.getTotalFaces(); i++) {
@@ -157,17 +157,16 @@ void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f l
         modelVecNormals = model.getVertexNormal_ptr(i);
 
         for (int vi = 0; vi < 3; vi++) {
-            modelVecs[vi] = matToVec3 (
-                  translate(width / 2, height / 2, 0)
-                * simpleProjection(z_distance)
-                * translate(-width / 2, -height / 2, 0)
+            screen_coords[vi] = matToVec3 (
+                  vpm
                 * vecToMat(model.getVertex_ptr(i)[vi])
             );
+            std::cout << screen_coords[vi] << '\n';
         }
 
-        my_gl::triangle(modelVecs, img_zbuffer, model.getTextureImg(), modelVtCoords, outputImg, modelVecNormals, lightDir, true);
+        my_gl::triangle(screen_coords, img_zbuffer, model.getTextureImg(), modelVtCoords, outputImg, modelVecNormals, lightDir, true);
     }
-    delete[] modelVecs;
+    delete[] screen_coords;
 }
 
 Matrix zoom(float factor) {

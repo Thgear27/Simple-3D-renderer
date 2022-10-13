@@ -19,7 +19,7 @@ void line(vec3i p0, vec3i p1, TGAImage& img, const TGAColor& color);
 void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg, vec3f* vec_normals, vec3f lightDir, bool smoothShadow);
 
 void wireRender(Model& model, const TGAColor& line_color, TGAImage& img);
-void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, int z_distance);
+void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, Matrix vpm);
 TGAColor getColorFromTexture (vec2f* uvCoords, vec3f baryCoords, TGAImage& textureImg);
 
 Matrix zoom(float factor);

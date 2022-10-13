@@ -19,15 +19,13 @@ int main() {
     Model modelo(african_head, Model::Format::with_vt, african_head_texture_img);
 
     Renderer renderer(modelo, img);
-    renderer.setLightDirection(vec3f { 1, -1, 1 });
-    renderer.setViewport();
+    renderer.setLightDirection(vec3f { 0, 0, 1 });
+    renderer.setViewport(0, 0, width, height);
+    renderer.setProyection(10);
+    renderer.lookAt(vec3f { 0, 0, 1 }, vec3f { 0, 0, 0 }, vec3f { 0, 1, 0 });
     
 
-    renderer.doTransformation(my_gl::translate(0, 0, -900), modelo.getModelCenter());
-
-    renderer.doTransformation(my_gl::rotatey(0.2f), modelo.getModelCenter());
-    renderer.doTransformation(my_gl::rotatex(-0.7f), modelo.getModelCenter());
-    renderer.render(1000);
+    renderer.render();
     renderer.generateImg("SI.tga");
 
     std::cout << "done..." << '\n';

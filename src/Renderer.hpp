@@ -12,14 +12,16 @@ public:
     Renderer(Model& model, TGAImage& context);
     ~Renderer();
 
-    void render(int z_proyectionDistance);
-    void reInitialize(Model& model, const char* texture); 
+    void render();
+    void reInitialize(Model& model); 
     void doTransformation(const Matrix& mat,const vec3f& point);
     void generateImg(const std::string& filename);
     void clearImg();
     
     // It'll change (the definition)
-    void setViewport();
+    void setViewport(int x, int y, int w, int h);
+    void setProyection(int z_distance);
+    void lookAt(vec3f eye, vec3f center, vec3f up);
 
     void setOutputImg(const TGAImage& img); 
     void setLightDirection(const vec3f& light_dir);
@@ -32,6 +34,11 @@ private:
     Model*    m_model;
     int m_height;
     int m_width;
+    const int m_depth;
+
+    Matrix proyection = Matrix::Identity(4); // Perspective proyection matrix
+    Matrix viewport   = Matrix::Identity(4); // Viewport matrix
+    Matrix modelView  = Matrix::Identity(4); // View matrix (with de lookat function)
 };
 
 #endif // RENDERER_H
