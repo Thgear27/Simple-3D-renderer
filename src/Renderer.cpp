@@ -2,7 +2,7 @@
 #include "Renderer.hpp"
 
 //////////////////////////////////////////////////////////////
-class GouraudShader : public my_gl::shader_i {
+struct GouraudShader : public my_gl::shader_i {
     const Matrix& m_viewport;
     const Matrix& m_proyection;
     const Matrix& m_modelView;
@@ -11,8 +11,10 @@ class GouraudShader : public my_gl::shader_i {
     Model*  m_model;
     float intensity = 0.0f;
 
-    GouraudShader(const Matrix& v, const Matrix& p, const Matrix& m, const vec3f& lightDir)
-    : m_viewport(v), m_proyection(p), m_modelView(m), m_lightDir(lightDir) {}
+    GouraudShader(const Matrix& v, const Matrix& p, const Matrix& m, const vec3f& lightDir, Model* model)
+    : m_viewport(v), m_proyection(p), m_modelView(m), m_lightDir(lightDir) {
+        m_model = model;
+    }
 
     vec3f vertex(int i_face, int which_vertex) override {
         vecNormals = m_model->getVertexNormal_ptr(i_face);
@@ -23,8 +25,13 @@ class GouraudShader : public my_gl::shader_i {
         vec3f normalResult = 
             vecNormals[0] * bar.x + vecNormals[1] * bar.y + vecNormals[2] * bar.z;
         intensity = std::max(0.0f, dotProduct(normalResult, m_lightDir));
+        for (int i = 0; i < 3; i++) {
+            uint8_t c = static_cast<uint8_t>(intensity * 255);
+            color = TGAColor{ c, c, c, 255 };
+        }
         return false;
     }
+    ~GouraudShader() override { std::cout << "called\n"; }
 };
 //////////////////////////////////////////////////////////////
 
@@ -47,8 +54,29 @@ Renderer::Renderer(Model& model, TGAImage& context)
 Renderer::~Renderer() { delete[] m_zbuffer; }
 
 void Renderer::render() {
-    Matrix vpm = viewport * proyection * modelView;
-    my_gl::simpleRender(*m_model, m_zbuffer, m_outputImg, m_lightDir, vpm);
+    GouraudShader shader { viewport, proyection, modelView, m_lightDir, m_model };
+
+    m_lightDir.normalize();
+    vec2f mvc[3] = { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f }};
+    vec2f* modelVtCoords; 
+    vec3f* screen_coords = new vec3f[3] {};
+    vec3f* modelVecNormals;
+    if (m_model->getFormat() == Model::Format::no_vt) modelVtCoords = mvc;
+    for (int i = 0; i < m_model->getTotalFaces(); i++) {
+        if (m_model->getFormat() == Model::Format::with_vt)
+            modelVtCoords = m_model->getVertexTexture_ptr(i);
+
+        modelVecNormals = m_model->getVertexNormal_ptr(i);
+
+        for (int vi = 0; vi < 3; vi++) {
+            screen_coords[vi] = shader.vertex(i, vi);
+            std::cout << screen_coords[vi] << '\n';
+        }
+
+        // la nueva función se le tiene que ingresar el shader
+        my_gl::triangle(screen_coords, m_zbuffer, m_model->getTextureImg(), modelVtCoords, m_outputImg, modelVecNormals, m_lightDir, true);
+    }
+    delete[] screen_coords;
 }
 
 void Renderer::reInitialize(Model& model) {

@@ -34,9 +34,9 @@ Matrix shear(float x, float y);
 Matrix simpleProjection(int zDistance);
 
 //////////////////////////////////////////////////////////////
-class shader_i {
+struct shader_i {
 protected:
-    virtual ~shader_i();
+    virtual ~shader_i() {}
     virtual vec3f vertex(int i_face, int which_vertex) = 0;
     virtual bool fragment(const vec3f& bary_coords, TGAColor& color) = 0;
 };
