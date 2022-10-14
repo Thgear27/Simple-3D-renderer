@@ -141,8 +141,8 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
 }
 
 void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, Matrix vpm) {
-    int width  = outputImg.get_width();
-    int height = outputImg.get_height();
+    // int width  = outputImg.get_width();
+    // int height = outputImg.get_height();
 
     lightDir.normalize();
     vec2f mvc[3] = { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f }};

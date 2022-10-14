@@ -1,6 +1,7 @@
 #include <limits>
 #include "Renderer.hpp"
 
+//////////////////////////////////////////////////////////////
 class GouraudShader : public my_gl::shader_i {
     const Matrix& m_viewport;
     const Matrix& m_proyection;
@@ -25,6 +26,7 @@ class GouraudShader : public my_gl::shader_i {
         return false;
     }
 };
+//////////////////////////////////////////////////////////////
 
 Renderer::Renderer(Model& model, TGAImage& context) 
     : m_outputImg{ context }, m_depth { 255 }
