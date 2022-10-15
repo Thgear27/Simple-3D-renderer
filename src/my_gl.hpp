@@ -13,13 +13,19 @@ const TGAColor white   { 255, 255, 255, 255 };
 } // namespace color
 
 namespace my_gl {
+//////////////////////////////////////////////////////////////
+struct shader_i {
+    virtual ~shader_i() {}
+    virtual vec3f vertex(int i_face, int which_vertex) = 0;
+    virtual bool fragment(const vec3f& bary_coords, TGAColor& color) = 0;
+};
+//////////////////////////////////////////////////////////////
 
 void line(vec3i p0, vec3i p1, TGAImage& img, const TGAColor& color);
 
-void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg, vec3f* vec_normals, vec3f lightDir, bool smoothShadow);
+void triangle(vec3f* verts, float* zbuffer, TGAImage& outputImg, shader_i& shader);
 
 void wireRender(Model& model, const TGAColor& line_color, TGAImage& img);
-void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, Matrix vpm);
 TGAColor getColorFromTexture (vec2f* uvCoords, vec3f baryCoords, TGAImage& textureImg);
 
 Matrix lookAt(const vec3f& from, const vec3f& to, const vec3f& up);
@@ -32,15 +38,6 @@ Matrix rotatey(float angle);
 Matrix rotatez(float angle);
 Matrix shear(float x, float y);
 Matrix simpleProjection(int zDistance);
-
-//////////////////////////////////////////////////////////////
-struct shader_i {
-protected:
-    virtual ~shader_i() {}
-    virtual vec3f vertex(int i_face, int which_vertex) = 0;
-    virtual bool fragment(const vec3f& bary_coords, TGAColor& color) = 0;
-};
-//////////////////////////////////////////////////////////////
 
 } // namespace my_gl
 

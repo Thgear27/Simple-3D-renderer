@@ -56,22 +56,10 @@ TGAColor getColorFromTexture(vec2f* uvCoords, vec3f baryCoords, TGAImage& textur
     return textureImg.get((int)point.x, (int)point.y);
 }
 
-float getSmoothIntensity(vec3f* vec_normals, vec3f bcoord, vec3f lightDirection) {
-    vec3f normalResult = vec_normals[0] * bcoord.x + vec_normals[1] * bcoord.y + vec_normals[2] * bcoord.z ;
-    float intensity = dotProduct(normalResult, lightDirection);
-    return (intensity < 0.0f) ?  0.0f : intensity;
-}
-
-float getFaceIntensity(vec3f* modelVerts, vec3f lightDirNormalized) {
-    vec3f normal = crossProduct(modelVerts[1] - modelVerts[0], modelVerts[2] - modelVerts[0]);
-    normal.normalize();
-    float intensity = dotProduct(normal, lightDirNormalized);
-    return (intensity < 0.0f) ?  0.0f : intensity;
-}
-
-void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoords, TGAImage& outputImg, vec3f* vec_normals, vec3f lightDir, bool smoothShadow) {
+void triangle(vec3f* verts, float* zbuffer, TGAImage& outputImg, shader_i& shader) {
     if (verts[0].y == verts[1].y && verts[0].y == verts[2].y) return;
     if (verts[0].x == verts[1].x && verts[0].x == verts[2].x) return;
+
     vec3f verts_i[3] {};
     float img_width = outputImg.get_width();
     float img_height = outputImg.get_height();
@@ -96,25 +84,14 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& textureImg, vec2f* uvCoord
             vec3f bcoord = toBarycentricCoord(verts_i, vec2f { (float)x, (float)y });
             if (bcoord.x < 0.0f || bcoord.y < 0.0f || bcoord.z < 0.0f)
                 continue;
-
-            TGAColor TxturePxlColor = getColorFromTexture(uvCoords, bcoord, textureImg);
+            TGAColor color {}; 
             
-            if (smoothShadow) {
-                float intensity = getSmoothIntensity(vec_normals, bcoord, lightDir);
-                for (int i = 0; i < 3; i++) {
-                    TxturePxlColor.raw[i] = intensity * TxturePxlColor.raw[i];
-                }
-            } else {
-                float intensity = getFaceIntensity(verts, lightDir);
-                for (int i = 0; i < 3; i++) {
-                    TxturePxlColor.raw[i] = intensity * TxturePxlColor.raw[i];
-                }
-            }
 
             vertex_z_value = verts_i[0].z * bcoord.x + verts_i[1].z * bcoord.y + verts_i[2].z * bcoord.z;
             if (vertex_z_value > zbuffer[x + y * outputImg.get_width()]) {
                 zbuffer[x + y * outputImg.get_width()] = vertex_z_value;
-                outputImg.set(x, y, TxturePxlColor);
+                if (!shader.fragment(bcoord, color))
+                    outputImg.set(x, y, color);
             }
         }
     }
@@ -138,35 +115,6 @@ void wireRender(Model& model, const TGAColor& line_color, TGAImage& img) {
         my_gl::line((vec3i)screen_coords[1], (vec3i)screen_coords[2], img, line_color);
         my_gl::line((vec3i)screen_coords[0], (vec3i)screen_coords[2], img, line_color);
     }
-}
-
-void simpleRender(Model& model, float* img_zbuffer ,TGAImage& outputImg, vec3f lightDir, Matrix vpm) {
-    // int width  = outputImg.get_width();
-    // int height = outputImg.get_height();
-
-    lightDir.normalize();
-    vec2f mvc[3] = { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f }};
-    vec2f* modelVtCoords; 
-    vec3f* screen_coords = new vec3f[3] {};
-    vec3f* modelVecNormals;
-    if (model.getFormat() == Model::Format::no_vt) modelVtCoords = mvc;
-    for (int i = 0; i < model.getTotalFaces(); i++) {
-        if (model.getFormat() == Model::Format::with_vt)
-            modelVtCoords = model.getVertexTexture_ptr(i);
-
-        modelVecNormals = model.getVertexNormal_ptr(i);
-
-        for (int vi = 0; vi < 3; vi++) {
-            screen_coords[vi] = matToVec3 (
-                  vpm
-                * vecToMat(model.getVertex_ptr(i)[vi])
-            );
-            std::cout << screen_coords[vi] << '\n';
-        }
-
-        my_gl::triangle(screen_coords, img_zbuffer, model.getTextureImg(), modelVtCoords, outputImg, modelVecNormals, lightDir, true);
-    }
-    delete[] screen_coords;
 }
 
 Matrix zoom(float factor) {

@@ -54,27 +54,15 @@ Renderer::Renderer(Model& model, TGAImage& context)
 Renderer::~Renderer() { delete[] m_zbuffer; }
 
 void Renderer::render() {
+    m_lightDir.normalize();
     GouraudShader shader { viewport, proyection, modelView, m_lightDir, m_model };
 
-    m_lightDir.normalize();
-    vec2f mvc[3] = { vec2f { 0.0f, 0.0f }, vec2f { 0.9f, 0.9f }, vec2f { 0.0f, 0.9f }};
-    vec2f* modelVtCoords; 
     vec3f* screen_coords = new vec3f[3] {};
-    vec3f* modelVecNormals;
-    if (m_model->getFormat() == Model::Format::no_vt) modelVtCoords = mvc;
     for (int i = 0; i < m_model->getTotalFaces(); i++) {
-        if (m_model->getFormat() == Model::Format::with_vt)
-            modelVtCoords = m_model->getVertexTexture_ptr(i);
-
-        modelVecNormals = m_model->getVertexNormal_ptr(i);
-
         for (int vi = 0; vi < 3; vi++) {
             screen_coords[vi] = shader.vertex(i, vi);
-            std::cout << screen_coords[vi] << '\n';
         }
-
-        // la nueva función se le tiene que ingresar el shader
-        my_gl::triangle(screen_coords, m_zbuffer, m_model->getTextureImg(), modelVtCoords, m_outputImg, modelVecNormals, m_lightDir, true);
+        my_gl::triangle(screen_coords, m_zbuffer, m_outputImg, shader);
     }
     delete[] screen_coords;
 }
