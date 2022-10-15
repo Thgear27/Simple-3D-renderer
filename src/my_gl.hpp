@@ -7,8 +7,9 @@
 
 namespace color {
 
-const TGAColor red     { 255, 0, 0, 255 };
-const TGAColor white   { 255, 255, 255, 255 };
+const TGAColor red          { 255, 0, 0, 255 };
+const TGAColor white        { 255, 255, 255, 255 };
+const TGAColor orange_coral { 255,127, 80, 255 };
 
 } // namespace color
 
