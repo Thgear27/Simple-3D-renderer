@@ -25,6 +25,7 @@ public:
     Format getFormat() { return format; }
 
     bool load_model_from_file(const char* filename);
+    TGAColor diffuse(const vec2f& uv_coord);
 
     // Member functions added
     vec3f getModelCenter();

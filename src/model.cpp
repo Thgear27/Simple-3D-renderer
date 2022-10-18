@@ -126,6 +126,10 @@ bool Model::load_model_from_file(const char* filename) {
     return true;
 }
 
+TGAColor Model::diffuse(const vec2f& uv) {
+    return m_textureImg.get(uv.x * m_textureImg.get_width(), uv.y * m_textureImg.get_height());
+}
+
 vec3f& Model::getVertex(int face_index, int which_vertex) {
     return vertices[faces[face_index].v_idx[which_vertex - 1]];
 }
