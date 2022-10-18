@@ -25,7 +25,7 @@ const char* diablo3pose_nm           = "obj/diablo3_pose/diablo3_pose_nm.tga";
 const char* cubePortal               = "obj/cubePortal/cube.obj";
 const char* cubePortalTexture_img    = "obj/cubePortal/metal_box_skin001.tga";
 
-const char* floor                    = "obj/floor.obj";
+const char* floor_obj                = "obj/floor.obj";
 const char* floor_nm_tangent         = "obj/floor_nm_tangent.tga";
 
 #endif // OBJPATHS_H

@@ -38,24 +38,6 @@ void line(vec3i p0, vec3i p1, TGAImage& img, const TGAColor& color) {
     }
 }
 
-TGAColor getColorFromTexture(vec2f* uvCoords, vec3f baryCoords, TGAImage& textureImg) {
-    // vec2i uvCoords_int[3];
-    int img_width = textureImg.get_width();
-    int img_height = textureImg.get_height();
-
-    vec2f uvCoordsCpy[3];
-    for (int i = 0; i < 3; i++) {
-        uvCoordsCpy[i] = uvCoords[i];
-    }
-
-    for (int i = 0; i < 3; i++) {
-        uvCoordsCpy[i].x = uvCoords[i].x * img_width;
-        uvCoordsCpy[i].y = uvCoords[i].y * img_height;
-    }
-    vec2f point = uvCoordsCpy[0] * baryCoords.x + uvCoordsCpy[1] * baryCoords.y + uvCoordsCpy[2] * baryCoords.z;
-    return textureImg.get((int)point.x, (int)point.y);
-}
-
 void triangle(vec3f* verts, float* zbuffer, TGAImage& outputImg, shader_i& shader) {
     if (verts[0].y == verts[1].y && verts[0].y == verts[2].y) return;
     if (verts[0].x == verts[1].x && verts[0].x == verts[2].x) return;
@@ -82,10 +64,9 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& outputImg, shader_i& shade
     for (int x = boxmin.x; x < boxmax.x; x++) {
         for (int y = boxmin.y; y < boxmax.y; y++) {
             vec3f bcoord = toBarycentricCoord(verts_i, vec2f { (float)x, (float)y });
-            if (bcoord.x < 0.0f || bcoord.y < 0.0f || bcoord.z < 0.0f)
-                continue;
+
+            if (bcoord.x < 0.0f || bcoord.y < 0.0f || bcoord.z < 0.0f) continue;
             TGAColor color {}; 
-            
 
             vertex_z_value = verts_i[0].z * bcoord.x + verts_i[1].z * bcoord.y + verts_i[2].z * bcoord.z;
             if (vertex_z_value > zbuffer[x + y * outputImg.get_width()]) {
