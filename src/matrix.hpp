@@ -17,8 +17,8 @@ public:
 
     static const Matrix& Identity(int size);
 
-    std::vector<float>&  operator[] (int index); 
-    const std::vector<float>&  operator[] (int index) const; 
+    inline std::vector<float>&  operator[] (int index) { return raw[index]; }
+    inline const std::vector<float>&  operator[] (int index) const { return raw[index]; }
     friend std::ostream& operator<< (std::ostream& out, const Matrix& mat);
     friend const Matrix  operator*  (const Matrix& lhs, const Matrix& rhs);
     friend const Matrix  operator+  (const Matrix& lhs, const Matrix& rhs);

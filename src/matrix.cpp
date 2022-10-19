@@ -42,14 +42,6 @@ const Matrix& Matrix::Identity(int size) {
     return mat;
 }
 
-std::vector<float>& Matrix::operator[] (int index) {
-    return raw[index];
-}
-
-const std::vector<float>&  Matrix::operator[] (int index) const {
-    return raw[index];
-}
-
 std::ostream& operator<< (std::ostream& out, const Matrix& mat) {
     for (int i = 0; i < mat.num_rows; i++) {
         out << "[ ";
