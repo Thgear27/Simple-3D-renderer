@@ -17,14 +17,14 @@ namespace my_gl {
 //////////////////////////////////////////////////////////////
 struct shader_i {
     virtual ~shader_i() {}
-    virtual vec3f vertex(int i_face, int which_vertex) = 0;
+    virtual Matrix vertex(int i_face, int which_vertex) = 0;
     virtual bool fragment(const vec3f& bary_coords, TGAColor& color) = 0;
 };
 //////////////////////////////////////////////////////////////
 
 void line(vec3i p0, vec3i p1, TGAImage& img, const TGAColor& color);
 
-void triangle(vec3f* verts, float* zbuffer, TGAImage& outputImg, shader_i& shader);
+void triangle(Matrix* verts, float* zbuffer, TGAImage& outputImg, shader_i& shader);
 
 void wireRender(Model& model, const TGAColor& line_color, TGAImage& img);
 TGAColor getColorFromTexture (vec2f* uvCoords, vec3f baryCoords, TGAImage& textureImg);

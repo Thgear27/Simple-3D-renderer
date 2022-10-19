@@ -16,34 +16,67 @@ struct GouraudShader : public my_gl::shader_i {
         m_model = model;
     }
 
-    vec3f vertex(int i_face, int which_vertex) override {
+    Matrix vertex(int i_face, int which_vertex) override {
         vecNormals = m_model->getVertexNormal_ptr(i_face);
         vec3f vec = m_model->getVertex_ptr(i_face)[which_vertex];
-        return matToVec3(m_viewport * m_proyection * m_modelView * vecToMat(vec));
+        return m_viewport * m_proyection * m_modelView * vecToMat(vec);
     }
+
     bool fragment(const vec3f& bar, TGAColor& color) override {
-        vec3f normalResult = 
-            vecNormals[0] * bar.x + vecNormals[1] * bar.y + vecNormals[2] * bar.z;
+        vec3f normalResult = vecNormals[0] * bar.x + vecNormals[1] * bar.y + vecNormals[2] * bar.z;
         intensity = std::max(0.0f, dotProduct(normalResult, m_lightDir));
         for (int i = 0; i < 3; i++) {
-            uint8_t c = static_cast<uint8_t>(intensity * 255);
-            color = TGAColor{ c, c, c, 255 };
+            color.raw[i] = 255 * intensity;
         }
         return false;
     }
     ~GouraudShader() override { std::cout << "called\n"; }
+};
+
+struct textureShader : public my_gl::shader_i {
+    const Matrix& m_viewport;
+    const Matrix& m_proyection;
+    const Matrix& m_modelView;
+    const vec3f&  m_lightDir;
+    vec3f* vecNormals;
+    vec2f* vecTextures;
+    Model* m_model;
+    TGAImage& m_textureImg;
+    float intensity = 0.0f;
+
+    textureShader(const Matrix& v, const Matrix& p, const Matrix& m, const vec3f& lightDir, Model* model, TGAImage& textureImg)
+    : m_viewport(v), m_proyection(p), m_modelView(m), m_lightDir(lightDir), m_textureImg(textureImg) {
+        m_model = model;
+    }
+
+    Matrix vertex(int i_face, int which_vertex) override {
+        vecNormals  = m_model->getVertexNormal_ptr(i_face);
+        vecTextures = m_model->getVertexTexture_ptr(i_face);
+        vec3f vec = m_model->getVertex_ptr(i_face)[which_vertex];
+        return m_viewport * m_proyection * m_modelView * vecToMat(vec);
+    }
+
+    bool fragment(const vec3f& bar, TGAColor& color) override {
+        vec3f normalResult = vecNormals[0] * bar.x + vecNormals[1] * bar.y + vecNormals[2] * bar.z;
+        intensity = std::max(0.0f, dotProduct(normalResult, m_lightDir));
+        vec2f uv = vecTextures[0] * bar.x + vecTextures[1] * bar.y + vecTextures[2] * bar.z;
+        color = m_model->diffuse(uv);
+        for (int i = 0; i < 3; i++) { color.raw[i] = color.raw[i] * intensity; }
+        return false;
+    }
+    ~textureShader() override { std::cout << "called\n"; }
 };
 //////////////////////////////////////////////////////////////
 
 Renderer::Renderer(Model& model, TGAImage& context) 
     : m_outputImg{ context }, m_depth { 255 }
 {
-    m_height     = m_outputImg.get_height();
-    m_width      = m_outputImg.get_width();
+    m_height   = m_outputImg.get_height();
+    m_width    = m_outputImg.get_width();
 
-    m_model      = &model;
-    m_zbuffer    = new float[m_height * m_width];
-    m_lightDir   = vec3f{ 0, 0 ,1 };
+    m_model    = &model;
+    m_zbuffer  = new float[m_height * m_width];
+    m_lightDir = vec3f{ 0, 0 ,1 };
 
     // zbuffer initialization
     for (int i = 0; i < m_height * m_width; i++) {
@@ -55,9 +88,9 @@ Renderer::~Renderer() { delete[] m_zbuffer; }
 
 void Renderer::render() {
     m_lightDir.normalize();
-    GouraudShader shader { viewport, proyection, modelView, m_lightDir, m_model };
+    textureShader shader { viewport, proyection, modelView, m_lightDir, m_model, m_model->getTextureImg() };
 
-    vec3f* screen_coords = new vec3f[3] {};
+    Matrix* screen_coords = new Matrix[3] {};
     for (int i = 0; i < m_model->getTotalFaces(); i++) {
         for (int vi = 0; vi < 3; vi++) {
             screen_coords[vi] = shader.vertex(i, vi);

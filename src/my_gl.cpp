@@ -38,7 +38,10 @@ void line(vec3i p0, vec3i p1, TGAImage& img, const TGAColor& color) {
     }
 }
 
-void triangle(vec3f* verts, float* zbuffer, TGAImage& outputImg, shader_i& shader) {
+void triangle(Matrix* verts_mat, float* zbuffer, TGAImage& outputImg, shader_i& shader) {
+    vec3f verts[3];
+    for (int i = 0; i < 3; i++) { verts[i] = matToVec3(verts_mat[i]); }
+    
     if (verts[0].y == verts[1].y && verts[0].y == verts[2].y) return;
     if (verts[0].x == verts[1].x && verts[0].x == verts[2].x) return;
 
@@ -59,11 +62,18 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& outputImg, shader_i& shade
         boxmax.x = std::min(img_width, std::max(boxmax.x, verts[i].x));
         boxmax.y = std::min(img_height, std::max(boxmax.y, verts[i].y));
     }
-
+    
     float vertex_z_value = 0;
     for (int x = boxmin.x; x < boxmax.x; x++) {
         for (int y = boxmin.y; y < boxmax.y; y++) {
             vec3f bcoord = toBarycentricCoord(verts_i, vec2f { (float)x, (float)y });
+
+            vec3f bc_clip = vec3f { 
+                bcoord.x / verts_mat[0][3][0], 
+                bcoord.y / verts_mat[1][3][0], 
+                bcoord.z / verts_mat[2][3][0]
+            };
+            bc_clip = bc_clip / (bc_clip.x + bc_clip.y + bc_clip.z) ;
 
             if (bcoord.x < 0.0f || bcoord.y < 0.0f || bcoord.z < 0.0f) continue;
             TGAColor color {}; 
@@ -71,7 +81,7 @@ void triangle(vec3f* verts, float* zbuffer, TGAImage& outputImg, shader_i& shade
             vertex_z_value = verts_i[0].z * bcoord.x + verts_i[1].z * bcoord.y + verts_i[2].z * bcoord.z;
             if (vertex_z_value > zbuffer[x + y * outputImg.get_width()]) {
                 zbuffer[x + y * outputImg.get_width()] = vertex_z_value;
-                if (!shader.fragment(bcoord, color))
+                if (!shader.fragment(bc_clip, color))
                     outputImg.set(x, y, color);
             }
         }
