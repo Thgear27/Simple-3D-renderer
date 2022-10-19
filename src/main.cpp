@@ -17,7 +17,7 @@ int main() {
     renderer.setLightDirection(vec3f { 1, 0, 1 });
     renderer.setViewport(0, 0, width, height);
     renderer.setProyection(4);
-    renderer.setCamera(vec3f { 0, 1, 2 }, vec3f { 0, 0.1, 0 }, vec3f { 0, 1, 0 });
+    renderer.setCamera(vec3f { 1, 0.2, 1 }, vec3f { 0, 0, 0 }, vec3f { 0, 1, 0 });
 
     Timer time;    
     time.reset();
@@ -26,7 +26,7 @@ int main() {
     renderer.setLightDirection(vec3f { 1, 1, 1 });
     renderer.render();
     std::cout << time.elapsed() << '\n';
-    renderer.generateImg("SI11.tga");
+    renderer.generateImg("SI13.tga");
 
     std::cout << "done..." << '\n';
     return 0;
