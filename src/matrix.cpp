@@ -122,3 +122,37 @@ const Matrix operator- (const Matrix& lhs, const Matrix& rhs) {
     }
     return result; 
 }
+
+void Matrix::addToRow(int rowTo, int rowFrom, float mult) {
+    for (int i = 0; i < num_columns; i++) {
+        raw[rowTo][i] += raw[rowFrom][i] * mult;
+    }
+}
+void Matrix::multiplyRowBy(int row, float multNumber) {
+    for (int i = 0; i < num_columns; i++)
+        raw[row][i] *= multNumber;
+}
+
+void Matrix::inverse() {
+    if (num_columns != num_rows) {
+        std::cout << "No se puede invertir la matriz con \n"
+                  << "Numero de columnas:" << num_columns << '\n'
+                  << "Numero de filas:   " << num_rows << '\n';
+    }
+    Matrix result = Matrix::Identity(num_columns);
+    
+    for (int col = 0; col < num_columns; col++) {
+        float pivot = raw[col][col];
+        if (pivot == 0) return;
+
+        multiplyRowBy(col, 1.0f / pivot);
+        result.multiplyRowBy(col, 1.0f / pivot);
+
+        for (int row = 0; row < num_rows; row++) {
+            if (col == row) continue;
+            float current = raw[row][col];
+            addToRow(row, col, -current);
+            result.addToRow(row, col, -current);
+        }
+    }
+}

@@ -24,6 +24,10 @@ public:
     friend const Matrix  operator+  (const Matrix& lhs, const Matrix& rhs);
     friend const Matrix  operator-  (const Matrix& lhs, const Matrix& rhs);
 
+    void inverse();
+    void addToRow(int rowTo, int rowFrom, float mult);
+    void multiplyRowBy(int row, float multNumber);
+
     Matrix& operator= (const Matrix& cpymat);
 
     int getNum_rows()    const { return num_rows; }
