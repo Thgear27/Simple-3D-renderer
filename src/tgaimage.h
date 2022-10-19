@@ -60,6 +60,13 @@ struct TGAColor {
         // retorna la dereferenciacion de this y actua como una referencia
         return *this;
     }
+    TGAColor operator*(float num) {
+        TGAColor newcolor;
+        for (int i = 0; i < 3; i++) {
+            newcolor.raw[i] = raw[i] * num;
+        }
+        return newcolor;
+    }
 };
 
 // Clase que engloba representa una imagen .tga, capaz de generar un archivo de salidad .tga
