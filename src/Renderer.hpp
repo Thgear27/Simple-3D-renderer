@@ -18,7 +18,6 @@ public:
     void generateImg(const std::string& filename);
     void clearImg();
     
-    // It'll change (the definition)
     void setViewport(int x, int y, int w, int h);
     void setProyection(int z_distance);
     void setCamera(const vec3f& from, const vec3f& to, const vec3f& up);
