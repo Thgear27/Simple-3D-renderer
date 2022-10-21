@@ -16,7 +16,7 @@ Model::Model(const char* filename, Format l_format, const char* textureImgFile, 
                 v_ptr[3 * face_i + i] = getVertex(face_i, i + 1);
             }
             for (int i = 0; i < 3; i++) {
-                vt_ptr[3 * face_i + i] = getVertexTexture(face_i, i + 1);
+                vt_ptr[3 * face_i + i] = getVt(face_i, i + 1);
             }
             for (int i = 0; i < 3; i++) {
                 vn_ptr[3 * face_i + i] = getVertexNormal(face_i, i + 1);
@@ -152,7 +152,7 @@ vec3f& Model::getVertexNormal(int face_index, int which_vertex) {
     return vertices_normals[faces[face_index].vn_idx[which_vertex - 1]];
 }
 
-vec2f& Model::getVertexTexture(int face_index, int which_vertex) {
+vec2f& Model::getVt(int face_index, int which_vertex) {
     return vertices_textures[faces[face_index].vt_idx[which_vertex - 1]];
 }
 

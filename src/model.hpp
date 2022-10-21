@@ -50,7 +50,7 @@ private:
     
     vec3f& getVertex(int face_index, int which_vertex);
     vec3f& getVertexNormal(int face_index, int which_vertex);
-    vec2f& getVertexTexture(int face_index, int which_vertex);
+    vec2f& getVt(int face_index, int which_vertex);
 
     std::vector<vec3f> vertices;
     std::vector<vec2f> vertices_textures;

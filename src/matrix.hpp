@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include "math.hpp"
 
 class Matrix {
 private:
@@ -24,14 +25,16 @@ public:
     friend const Matrix  operator+  (const Matrix& lhs, const Matrix& rhs);
     friend const Matrix  operator-  (const Matrix& lhs, const Matrix& rhs);
 
+    void setCol(int col, const vec3f& vec);
+
     void inverse();
     void addToRow(int rowTo, int rowFrom, float mult);
     void multiplyRowBy(int row, float multNumber);
 
     Matrix& operator= (const Matrix& cpymat);
 
-    int getNum_rows()    const { return num_rows; }
-    int getNum_columns() const { return num_columns; }
+    int getNumRows()    const { return num_rows; }
+    int getNumColumns() const { return num_columns; }
 };
 
 #endif // MATRIZ_H 

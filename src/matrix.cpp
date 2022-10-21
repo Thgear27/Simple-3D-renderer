@@ -75,7 +75,7 @@ Matrix& Matrix::operator= (const Matrix& cpymat) {
     
 const Matrix operator* (const Matrix& lhs, const Matrix& rhs) {
     if (lhs.num_columns != rhs.num_rows)
-        std::cerr << "Error, no se puede multiplicar esta matris" << '\n';
+        std::cerr << "Error, no se puede multiplicar esta matriz" << '\n';
 
     Matrix result { lhs.num_rows, rhs.num_columns };
 
@@ -91,7 +91,7 @@ const Matrix operator* (const Matrix& lhs, const Matrix& rhs) {
 
 const Matrix operator+ (const Matrix& lhs, const Matrix& rhs) {
     if (lhs.num_rows != rhs.num_rows || lhs.num_columns != rhs.num_columns) 
-        std::cerr << "Error, no se puede sumar esta matris" << '\n';
+        std::cerr << "Error, no se puede sumar esta matriz" << '\n';
 
     Matrix result { lhs.num_rows, lhs.num_columns };
     
@@ -104,7 +104,7 @@ const Matrix operator+ (const Matrix& lhs, const Matrix& rhs) {
 
 const Matrix operator- (const Matrix& lhs, const Matrix& rhs) {
     if (lhs.num_rows != rhs.num_rows || lhs.num_columns != rhs.num_columns) 
-        std::cerr << "Error, no se puede sumar esta matris" << '\n';
+        std::cerr << "Error, no se puede sumar esta matriz" << '\n';
 
     Matrix result { lhs.num_rows, lhs.num_columns };
     

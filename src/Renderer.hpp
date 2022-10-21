@@ -6,6 +6,7 @@
 #include "model.hpp"
 #include "my_gl.hpp"
 #include "math.hpp"
+#include "matrix.hpp"
 
 class Renderer {
 public:

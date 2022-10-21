@@ -1,13 +1,14 @@
 #ifndef MATH_H
 #define MATH_H
 
-#include "matrix.hpp"
 #include <array>
 #include <cmath>
 #include <iostream>
 
 template <typename T>
 class vec3;
+
+class Matrix;
 
 //////////////////////////////////////////////////////
 // Vectores con 2 componentes
@@ -68,6 +69,7 @@ template <typename T>
 class vec3 {
 public:
     T x, y, z;
+    
     vec3() : x(T()), y(T()), z(T()) {}
     explicit vec3(T l_x, T l_y, T l_z) : x(l_x), y(l_y), z(l_z) {}
 

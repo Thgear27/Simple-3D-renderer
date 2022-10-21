@@ -4,6 +4,7 @@
 #include "math.hpp"
 #include "model.hpp"
 #include "tgaimage.h"
+#include "matrix.hpp"
 
 namespace color {
 

@@ -1,4 +1,5 @@
 #include "math.hpp"
+#include "matrix.hpp"
 #include <cmath>
 
 Matrix vecToMat(const vec2f& vec) {
@@ -19,11 +20,11 @@ Matrix vecToMat(const vec3f& vec) {
 }
 
 const vec2f matToVec2(const Matrix& mat) {
-    if (mat.getNum_rows() != 3) std::cerr << "Error en matToVec2\n";
+    if (mat.getNumRows() != 3) std::cerr << "Error en matToVec2\n";
     return vec2f { mat[0][0] / mat[2][0], mat[1][0] / mat[2][0] };
 }
 
 const vec3f matToVec3(const Matrix& mat) {
-    if (mat.getNum_rows() != 4) std::cerr << "Error en matToVec3\n";
+    if (mat.getNumRows() != 4) std::cerr << "Error en matToVec3\n";
     return vec3f { mat[0][0] / mat[3][0], mat[1][0] / mat[3][0], mat[2][0] / mat[3][0] };
 }
