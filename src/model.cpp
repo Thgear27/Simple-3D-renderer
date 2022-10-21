@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-Model::Model(const char* filename, Format l_format, const char* textureImgFile) 
+Model::Model(const char* filename, Format l_format, const char* textureImgFile, const char* nrmFile) 
     : format(l_format) 
 {
     if (load_model_from_file(filename)) {
@@ -23,6 +23,8 @@ Model::Model(const char* filename, Format l_format, const char* textureImgFile)
             }
         }
     } 
+    m_normalMap.read_tga_file(nrmFile);
+    m_normalMap.flip_vertically();
     m_textureImg.read_tga_file(textureImgFile);
     m_textureImg.flip_vertically();
 }
@@ -128,6 +130,18 @@ bool Model::load_model_from_file(const char* filename) {
 
 TGAColor Model::diffuse(const vec2f& uv) {
     return m_textureImg.get(uv.x * m_textureImg.get_width(), uv.y * m_textureImg.get_height());
+}
+
+vec3f Model::normal(const vec2f& uv_coord) {
+    vec3f ret;
+    vec2f point;
+    point.x = uv_coord.x * m_normalMap.get_width();
+    point.y = uv_coord.y * m_normalMap.get_height();
+    TGAColor color = m_normalMap.get((int)point.x, (int)point.y);
+    ret.x = (float)color.raw[0] / 255.0f * 2.0f - 1.0f;
+    ret.y = (float)color.raw[1] / 255.0f * 2.0f - 1.0f;
+    ret.z = (float)color.raw[2] / 255.0f * 2.0f - 1.0f;
+    return ret; 
 }
 
 vec3f& Model::getVertex(int face_index, int which_vertex) {
