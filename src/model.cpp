@@ -138,9 +138,9 @@ vec3f Model::normal(const vec2f& uv_coord) {
     point.x = uv_coord.x * m_normalMap.get_width();
     point.y = uv_coord.y * m_normalMap.get_height();
     TGAColor color = m_normalMap.get((int)point.x, (int)point.y);
-    ret.x = ((float)color.raw[0] / 255 * 2.0f) - 1.0f;
+    ret.x = ((float)color.raw[2] / 255 * 2.0f) - 1.0f;
     ret.y = ((float)color.raw[1] / 255 * 2.0f) - 1.0f;
-    ret.z = ((float)color.raw[2] / 255 * 2.0f) - 1.0f;
+    ret.z = ((float)color.raw[0] / 255 * 2.0f) - 1.0f;
     return ret; 
 }
 

@@ -22,13 +22,14 @@ struct GouraudShader : public my_gl::shader_i {
         return m_viewport * m_proyection * m_modelView * vecToMat(vec);
     }
 
-    bool fragment(const vec3f& bar, TGAColor& color) override {
+    bool fragment(const vec3f& bar, TGAColor& color, vec3f* verts) override {
         vec3f normalResult = vecNormals[0] * bar.x + vecNormals[1] * bar.y + vecNormals[2] * bar.z;
         intensity = std::max(0.0f, dotProduct(normalResult, m_lightDir));
         for (int i = 0; i < 3; i++) {
             color.raw[i] = 255 * intensity;
         }
         return false;
+        verts;
     }
     ~GouraudShader() override { std::cout << "called\n"; }
 };
@@ -63,13 +64,13 @@ struct textureShader : public my_gl::shader_i {
         return m_viewport * ret;
     }
 
-    bool fragment(const vec3f& bar, TGAColor& color) override {
+    bool fragment(const vec3f& bar, TGAColor& color, vec3f* verts) override {
         vec3f normalRes = mult3x3(nrm_mat, bar);
         vec2f uv        = mult2x3(uv_mat, bar);
 
         Matrix A { 3, 3 };
-        // A[0] = { ndc_tri[0][1] - ndc_tri[0][0], ndc_tri[1][1] - ndc_tri[1][0], ndc_tri[2][1] - ndc_tri[2][0] };
-        // A[1] = { ndc_tri[0][2] - ndc_tri[0][0], ndc_tri[1][2] - ndc_tri[1][0], ndc_tri[2][2] - ndc_tri[2][0] };
+        A[0] = { verts[1].x - verts[0].x, verts[1].y - verts[0].y, verts[1].z - verts[0].z }; 
+        A[1] = { verts[2].x - verts[0].x, verts[2].y - verts[0].y, verts[2].z - verts[0].z };
         A[2] = { normalRes.x, normalRes.y, normalRes.z };
 
         A.inverse();
@@ -117,6 +118,7 @@ Renderer::~Renderer() { delete[] m_zbuffer; }
 void Renderer::render() {
     m_lightDir.normalize();
     textureShader shader { viewport, proyection, modelView, m_lightDir, m_model, m_model->getTextureImg() };
+    // GouraudShader shader { viewport, proyection, modelView, m_lightDir, m_model };
 
     Matrix* screen_coords = new Matrix[3] {};
     for (int i = 0; i < m_model->getTotalFaces(); i++) {

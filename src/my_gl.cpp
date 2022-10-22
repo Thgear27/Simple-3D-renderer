@@ -81,7 +81,7 @@ void triangle(Matrix* verts_mat, float* zbuffer, TGAImage& outputImg, shader_i& 
             vertex_z_value = verts_i[0].z * bcoord.x + verts_i[1].z * bcoord.y + verts_i[2].z * bcoord.z;
             if (vertex_z_value > zbuffer[x + y * outputImg.get_width()]) {
                 zbuffer[x + y * outputImg.get_width()] = vertex_z_value;
-                if (!shader.fragment(bc_clip, color))
+                if (!shader.fragment(bc_clip, color, verts))
                     outputImg.set(x, y, color);
             }
         }

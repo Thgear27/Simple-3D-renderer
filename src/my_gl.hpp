@@ -19,7 +19,7 @@ namespace my_gl {
 struct shader_i {
     virtual ~shader_i() {}
     virtual Matrix vertex(int i_face, int which_vertex) = 0;
-    virtual bool fragment(const vec3f& bary_coords, TGAColor& color) = 0;
+    virtual bool fragment(const vec3f& bary_coords, TGAColor& color, vec3f* verts) = 0;
 };
 //////////////////////////////////////////////////////////////
 

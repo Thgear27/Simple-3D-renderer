@@ -206,4 +206,5 @@ void Matrix::inverse() {
             result.addToRow(row, col, -current);
         }
     }
+    *this = result;
 }
