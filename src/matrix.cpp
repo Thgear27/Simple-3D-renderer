@@ -115,6 +115,65 @@ const Matrix operator- (const Matrix& lhs, const Matrix& rhs) {
     return result; 
 }
 
+    // vec2f = mat2x3 * vec3f;
+vec2f mult2x3 (const Matrix& lhs, const vec3f& rhs) {
+    if (lhs.num_columns != 3) return vec2f{ 1, 1 };
+    vec2f ret { 0, 0 };
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 3; j++) {
+            ret[i] += lhs[i][j] * rhs[j];
+        }
+    }
+    return ret;
+}
+    // vec3f = mat3x3 * vec3f;
+vec3f mult3x3 (const Matrix& lhs, const vec3f& rhs) {
+    if (lhs.num_columns != 3) return vec3f{ 1, 1, 1 };
+    vec3f ret { 0, 0, 0 };
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            ret[i] += lhs[i][j] * rhs[j];
+        }
+    }
+    return ret;
+}
+
+void Matrix::setCol(int col, const vec3f& vec) {
+    if (num_rows < 3) {
+        std::cerr << "No se puede papu setCol(col, vec3f)\n";
+        return;
+    } 
+    for (int i = 0; i < 3; i++)
+        raw[i][col] = vec[i];
+}
+
+void Matrix::setRow(int row, const vec3f& vec) {
+    if (num_columns < 3) {
+        std::cerr << "No se puede papu setRow(row, vec3f)\n";
+        return;
+    } 
+    for (int i = 0; i < 3; i++)
+        raw[row][i] = vec[i];
+}
+
+void Matrix::setCol(int col, const vec2f& vec) {
+    if (num_rows < 2) {
+        std::cerr << "No se puede papu setCol(col, vec2f)\n";
+        return;
+    } 
+    for (int i = 0; i < 2; i++)
+        raw[i][col] = vec[i];
+}
+
+void Matrix::setRow(int row, const vec2f& vec) {
+    if (num_columns < 2) {
+        std::cerr << "No se puede papu setRow(row, vec2f)\n";
+        return;
+    } 
+    for (int i = 0; i < 2; i++)
+        raw[row][i] = vec[i];
+}
+
 void Matrix::addToRow(int rowTo, int rowFrom, float mult) {
     for (int i = 0; i < num_columns; i++) {
         raw[rowTo][i] += raw[rowFrom][i] * mult;

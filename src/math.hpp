@@ -15,7 +15,12 @@ class Matrix;
 template <typename T>
 class vec2 {
 public:
-    T x, y;
+    union {
+        struct {
+            T x, y;
+        };
+        T raw[2];
+    };
     vec2() : x(T()), y(T()) {}
     explicit vec2(const T l_x, const T l_y) : x(l_x), y(l_y) {}
 
@@ -28,6 +33,9 @@ public:
         out << "v2(" << v2.x << ", " << v2.y << ")";
         return out;
     }
+
+    T& operator[](const int index)       { return raw[index]; }
+    T  operator[](const int index) const { return raw[index]; }
 
     void normalize() {
         float module = std::sqrt(dotProduct(static_cast<vec3<T>>(*this), static_cast<vec3<T>>(*this)));
@@ -68,7 +76,13 @@ inline const vec2<T> operator/(const vec2<T>& v1, const T k) {
 template <typename T>
 class vec3 {
 public:
-    T x, y, z;
+    union {
+        struct {
+            T x, y, z;
+        };
+        T raw[3];
+    };
+    
     
     vec3() : x(T()), y(T()), z(T()) {}
     explicit vec3(T l_x, T l_y, T l_z) : x(l_x), y(l_y), z(l_z) {}
@@ -80,6 +94,9 @@ public:
         out << "v3(" << v3.x << ", " << v3.y << ", " << v3.z << ")";
         return out;
     }
+
+    T& operator[](const int index)       { return raw[index]; }
+    T  operator[](const int index) const { return raw[index]; }
 
     void normalize() {
         float module = std::sqrt(dotProduct(*this, *this));
@@ -271,7 +288,7 @@ inline vec3f toBarycentricCoord(vec2f* verts, vec2f point) {
 // some Matrix functions 
 Matrix vecToMat(const vec2f& vec);
 Matrix vecToMat(const vec3f& vec);
-const vec2f  matToVec2(const Matrix& mat);
-const vec3f  matToVec3(const Matrix& mat);
+const vec2f matToVec2(const Matrix& mat);
+const vec3f matToVec3(const Matrix& mat);
 
 #endif // MATH_H

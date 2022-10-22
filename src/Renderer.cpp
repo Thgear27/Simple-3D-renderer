@@ -38,8 +38,11 @@ struct textureShader : public my_gl::shader_i {
     const Matrix& m_proyection;
     const Matrix& m_modelView;
     const vec3f&  m_lightDir;
-    vec3f* vecNormals;
-    vec2f* vecTextures;
+
+    Matrix uv_mat { 2, 3 }; // coordenadas uv
+    Matrix nrm_mat { 3, 3 }; // Normal per vertex
+    // Matrix ndc_tri { 3, 3 }; // Normalized device coodinates
+
     Model* m_model;
     TGAImage& m_textureImg;
     float intensity = 0.0f;
@@ -50,18 +53,43 @@ struct textureShader : public my_gl::shader_i {
     }
 
     Matrix vertex(int i_face, int which_vertex) override {
-        vecNormals  = m_model->getVertexNormal_ptr(i_face);
-        vecTextures = m_model->getVertexTexture_ptr(i_face);
-        vec3f vec = m_model->getVertex_ptr(i_face)[which_vertex];
-        return m_viewport * m_proyection * m_modelView * vecToMat(vec);
+        // THIS
+        nrm_mat.setCol(which_vertex, m_model->getVertexNormal_ptr(i_face)[which_vertex]);
+        uv_mat.setCol(which_vertex, m_model->getVertexTexture_ptr(i_face)[which_vertex]);
+
+        vec3f gl_vertex = m_model->getVertex_ptr(i_face)[which_vertex];
+        Matrix ret = m_proyection * m_modelView * vecToMat(gl_vertex);
+
+        return m_viewport * ret;
     }
 
     bool fragment(const vec3f& bar, TGAColor& color) override {
-        vec3f normalResult = vecNormals[0] * bar.x + vecNormals[1] * bar.y + vecNormals[2] * bar.z;
-        intensity = std::max(0.0f, dotProduct(normalResult, m_lightDir));
-        vec2f uv = vecTextures[0] * bar.x + vecTextures[1] * bar.y + vecTextures[2] * bar.z;
-        color = m_model->diffuse(uv);
-        for (int i = 0; i < 3; i++) { color.raw[i] = color.raw[i] * intensity; }
+        vec3f normalRes = mult3x3(nrm_mat, bar);
+        vec2f uv        = mult2x3(uv_mat, bar);
+
+        Matrix A { 3, 3 };
+        // A[0] = { ndc_tri[0][1] - ndc_tri[0][0], ndc_tri[1][1] - ndc_tri[1][0], ndc_tri[2][1] - ndc_tri[2][0] };
+        // A[1] = { ndc_tri[0][2] - ndc_tri[0][0], ndc_tri[1][2] - ndc_tri[1][0], ndc_tri[2][2] - ndc_tri[2][0] };
+        A[2] = { normalRes.x, normalRes.y, normalRes.z };
+
+        A.inverse();
+
+        vec3f i = mult3x3(A, vec3f{ uv_mat[0][1] - uv_mat[0][0], uv_mat[0][2] - uv_mat[0][0], 0 });
+        vec3f j = mult3x3(A, vec3f{ uv_mat[1][1] - uv_mat[1][0], uv_mat[1][2] - uv_mat[1][0], 0 });
+        i.normalize();
+        j.normalize();
+
+        Matrix B { 3, 3 };
+        B.setCol(0, i);
+        B.setCol(1, j);
+        B.setCol(2, normalRes);
+
+        vec3f n = mult3x3(B, m_model->normal(uv));
+        n.normalize();
+
+        intensity = std::max(0.0f, dotProduct(n, m_lightDir));
+        // std::cout << intensity << '\n';
+        color = m_model->diffuse(uv) * intensity;
         return false;
     }
     ~textureShader() override { std::cout << "called\n"; }
