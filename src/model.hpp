@@ -15,7 +15,7 @@ class Model {
 public:
     enum Format { no_vt, with_vt };
 
-    Model(const char* filename, Format l_format, const char* textureImgFile, const char* nrmFile);
+    Model(const char* filename, Format l_format, const char* textureImgFile, const char* nrmFile, const char* specFile);
     ~Model();
 
     int getTotalFaces() { return total_faces; }
@@ -26,6 +26,7 @@ public:
 
     bool load_model_from_file(const char* filename);
     TGAColor diffuse(const vec2f& uv_coord);
+    float specular(const vec2f& uv_coord);
     vec3f normal(const vec2f& uv_coord);
 
     // Member functions added
@@ -57,6 +58,7 @@ private:
     std::vector<vec3f> vertices_normals;
     std::vector<face> faces;
 
+    TGAImage m_specularTexure;
     TGAImage m_textureImg;
     TGAImage m_normalMap;
 };

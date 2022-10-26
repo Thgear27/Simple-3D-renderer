@@ -68,6 +68,8 @@ struct textureShader : public my_gl::shader_i {
         vec3f normalRes = mult3x3(nrm_mat, bar);
         vec2f uv        = mult2x3(uv_mat, bar);
 
+        normalRes.normalize();
+
         Matrix A { 3, 3 };
         A[0] = { verts[1].x - verts[0].x, verts[1].y - verts[0].y, verts[1].z - verts[0].z }; 
         A[1] = { verts[2].x - verts[0].x, verts[2].y - verts[0].y, verts[2].z - verts[0].z };
@@ -88,10 +90,16 @@ struct textureShader : public my_gl::shader_i {
         vec3f n = mult3x3(B, m_model->normal(uv));
         n.normalize();
 
+        vec3f r = (n * (dotProduct(n, m_lightDir) * 2.0f)) - m_lightDir;
+        r.normalize();
+        float exponent = m_model->specular(uv);
+        if (exponent == 0) exponent = 1.0f;
+        float spec = std::pow(std::max(r.z, 0.0f), exponent);
+
         intensity = std::max(0.0f, dotProduct(n, m_lightDir));
 
         for (int i = 0; i < 3; i++) {
-            color.raw[i] = std::min<float>(255, (m_model->diffuse(uv).raw[i] * (intensity)));
+            color.raw[i] = std::min<float>(255, (m_model->diffuse(uv).raw[i] * (intensity + 0.6*spec)));
         }
         
         // color = m_model->diffuse(uv) * intensity;

@@ -4,8 +4,8 @@
 #include <sstream>
 #include <string>
 
-Model::Model(const char* filename, Format l_format, const char* textureImgFile, const char* nrmFile) 
-    : format(l_format) 
+Model::Model(const char* filename, Format l_format, const char* textureImgFile, const char* nrmFile, const char* specFile) 
+    : format(l_format)
 {
     if (load_model_from_file(filename)) {
         v_ptr  = new vec3f[total_faces * 3];
@@ -25,6 +25,8 @@ Model::Model(const char* filename, Format l_format, const char* textureImgFile, 
     } 
     m_normalMap.read_tga_file(nrmFile);
     m_normalMap.flip_vertically();
+    m_specularTexure.read_tga_file(specFile);
+    m_specularTexure.flip_vertically();
     m_textureImg.read_tga_file(textureImgFile);
     m_textureImg.flip_vertically();
 }
@@ -132,15 +134,18 @@ TGAColor Model::diffuse(const vec2f& uv) {
     return m_textureImg.get(uv.x * m_textureImg.get_width(), uv.y * m_textureImg.get_height());
 }
 
-vec3f Model::normal(const vec2f& uv_coord) {
+
+float Model::specular(const vec2f& uv) {
+    TGAColor color = m_specularTexure.get(uv.x * m_specularTexure.get_width(), uv.y * m_specularTexure.get_height());
+    return (float)(color.raw[0] / 1.0f);
+}
+
+vec3f Model::normal(const vec2f& uv) {
     vec3f ret {};
-    vec2f point;
-    point.x = uv_coord.x * m_normalMap.get_width();
-    point.y = uv_coord.y * m_normalMap.get_height();
-    TGAColor color = m_normalMap.get((int)point.x, (int)point.y);
-    ret.x = ((float)color.raw[2] / 255 * 2.0f) - 1.0f;
-    ret.y = ((float)color.raw[1] / 255 * 2.0f) - 1.0f;
-    ret.z = ((float)color.raw[0] / 255 * 2.0f) - 1.0f;
+    TGAColor color = m_normalMap.get(uv.x * m_normalMap.get_width(), uv.y * m_normalMap.get_height());
+    ret.x = ((float)color.raw[2] / 255.0f * 2.0f) - 1.0f;
+    ret.y = ((float)color.raw[1] / 255.0f * 2.0f) - 1.0f;
+    ret.z = ((float)color.raw[0] / 255.0f * 2.0f) - 1.0f;
     return ret; 
 }
 
@@ -161,10 +166,10 @@ vec3f* Model::getVertex_ptr(int face_index) {
     return v_ptr + (face_index * 3);
 }
 vec3f* Model::getVertexNormal_ptr(int face_index) {
-    return vn_ptr  + (face_index * 3);
+    return vn_ptr + (face_index * 3);
 }
 vec2f* Model::getVertexTexture_ptr(int face_index) {
-    return vt_ptr  + (face_index * 3);
+    return vt_ptr + (face_index * 3);
 }
 
 vec3f Model::getModelCenter() {

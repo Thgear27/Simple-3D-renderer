@@ -4,6 +4,7 @@
 const char* african_head             = "obj/african_head/african_head.obj";
 const char* african_head_texture_img = "obj/african_head/african_head_diffuse.tga";
 const char* african_head_nm_tangent  = "obj/african_head/african_head_nm_tangent.tga";
+const char* african_head_spec        = "obj/african_head/african_head_spec.tga";
 
 const char* ae_inner                 = "obj/african_head/african_head_eye_inner.obj";
 const char* ae_inner_texture_img     = "obj/african_head/african_head_eye_inner_diffuse.tga";
