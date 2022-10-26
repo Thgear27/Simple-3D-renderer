@@ -89,8 +89,12 @@ struct textureShader : public my_gl::shader_i {
         n.normalize();
 
         intensity = std::max(0.0f, dotProduct(n, m_lightDir));
-        // std::cout << intensity << '\n';
-        color = m_model->diffuse(uv) * intensity;
+
+        for (int i = 0; i < 3; i++) {
+            color.raw[i] = std::min<float>(255, (m_model->diffuse(uv).raw[i] * (intensity)));
+        }
+        
+        // color = m_model->diffuse(uv) * intensity;
         return false;
     }
     ~textureShader() override { std::cout << "called\n"; }
