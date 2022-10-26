@@ -16,7 +16,7 @@ public:
     Matrix(const Matrix& cpymat);
     ~Matrix();
 
-    static const Matrix& Identity(int size);
+    static Matrix Identity(int size);
 
     inline std::vector<float>&  operator[] (int index) { return raw[index]; }
     inline const std::vector<float>&  operator[] (int index) const { return raw[index]; }

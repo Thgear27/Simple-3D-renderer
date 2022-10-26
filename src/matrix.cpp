@@ -32,8 +32,8 @@ Matrix::Matrix(const Matrix& cpymat) {
 }
 
 
-const Matrix& Matrix::Identity(int size) {
-    static Matrix mat { size, size };
+Matrix Matrix::Identity(int size) {
+    Matrix mat { size, size };
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             mat[i][j] = (i == j) ? 1 : 0 ;
@@ -128,7 +128,9 @@ vec2f mult2x3 (const Matrix& lhs, const vec3f& rhs) {
 }
     // vec3f = mat3x3 * vec3f;
 vec3f mult3x3 (const Matrix& lhs, const vec3f& rhs) {
-    if (lhs.num_columns != 3) return vec3f{ 1, 1, 1 };
+    if (lhs.num_columns != 3) {
+        return vec3f{ 1, 1, 1 };
+    }
     vec3f ret { 0, 0, 0 };
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
@@ -194,7 +196,9 @@ void Matrix::inverse() {
     
     for (int col = 0; col < num_columns; col++) {
         float pivot = raw[col][col];
-        if (pivot == 0) return;
+        if (pivot == 0) {
+            return;
+        }
 
         multiplyRowBy(col, 1.0f / pivot);
         result.multiplyRowBy(col, 1.0f / pivot);
