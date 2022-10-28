@@ -93,19 +93,48 @@ struct textureShader : public my_gl::shader_i {
         vec3f r = (n * (dotProduct(n, m_lightDir) * 2.0f)) - m_lightDir;
         r.normalize();
         float exponent = m_model->specular(uv);
-        if (exponent == 0) exponent = 1.0f;
-        float spec = std::pow(std::max(r.z, 0.0f), exponent);
+        float spec = std::pow(std::max(r.z, 0.0f), 1 + exponent);
 
         intensity = std::max(0.0f, dotProduct(n, m_lightDir));
 
         for (int i = 0; i < 3; i++) {
-            color.raw[i] = std::min<float>(255, (m_model->diffuse(uv).raw[i] * (intensity + 0.6*spec)));
+            color.raw[i] = std::min<float>(255, (m_model->diffuse(uv).raw[i] * (intensity + (0.6 * spec))));
         }
         
         // color = m_model->diffuse(uv) * intensity;
         return false;
     }
     ~textureShader() override { std::cout << "called\n"; }
+};
+
+struct zbufferShader : public my_gl::shader_i {
+    const Matrix& m_viewport;
+    const Matrix& m_proyection;
+    const Matrix& m_modelView;
+    const vec3f&  m_lightDir;
+    vec3f* vecNormals;
+    Model*  m_model;
+    vec3f vec;
+    float intensity = 0.0f;
+
+    zbufferShader(const Matrix& v, const Matrix& p, const Matrix& m, const vec3f& lightDir, Model* model)
+    : m_viewport(v), m_proyection(p), m_modelView(m), m_lightDir(lightDir) {
+        m_model = model;
+    }
+
+    Matrix vertex(int i_face, int which_vertex) override {
+        vecNormals = m_model->getVertexNormal_ptr(i_face);
+        vec = m_model->getVertex_ptr(i_face)[which_vertex];
+        return m_viewport * m_proyection * m_modelView * vecToMat(vec);
+    }
+
+    bool fragment(const vec3f& bar, TGAColor& color, vec3f* verts) override {
+        for (int i = 0; i < 3; i++) {
+            color.raw[i] = 255 * (vec.z + 1.0f) / 2.0f;
+        }
+        return false;
+    }
+    ~zbufferShader() override { std::cout << "called\n"; }
 };
 //////////////////////////////////////////////////////////////
 
@@ -131,6 +160,7 @@ void Renderer::render() {
     m_lightDir.normalize();
     textureShader shader { viewport, proyection, modelView, m_lightDir, m_model, m_model->getTextureImg() };
     // GouraudShader shader { viewport, proyection, modelView, m_lightDir, m_model };
+    // zbufferShader shader { viewport, proyection, modelView, m_lightDir, m_model };
 
     Matrix* screen_coords = new Matrix[3] {};
     for (int i = 0; i < m_model->getTotalFaces(); i++) {
