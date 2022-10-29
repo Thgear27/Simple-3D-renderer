@@ -1,5 +1,5 @@
 # TinyRenderer Implementation
-Hello, this is my own Timyrenderer implemetation and I wrote it following these tutorials
+Hello, this is my own Tinyrenderer implemetation and I wrote it following these tutorials
 [Ssloy's tutorials](https://github.com/ssloy/tinyrenderer/wiki)
 
 ## What did I use?
